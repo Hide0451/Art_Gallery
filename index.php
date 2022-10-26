@@ -409,7 +409,7 @@ function showSlides() {
 <div class="grid-container">
 <?php
 $db_connection = pg_connect("host=localhost dbname=test user=postgres password=yo_password");
-$result = pg_query($db_connection, "SELECT pic_name FROM pictures");
+$result = pg_query($db_connection, "SELECT pic_name, pic_id FROM pictures");
 $result_1 = pg_query($db_connection, "SELECT COUNT(*) FROM pictures");
 $result_2 = pg_query($db_connection, "SELECT last_name FROM employees INNER JOIN pictures ON employees.employee_id = pictures.author_id");
 $a = 0;
@@ -417,19 +417,21 @@ $coun = pg_fetch_result($result_1, $a, 0);
 while($a < $coun) {
 $val[$a] = pg_fetch_result($result, $a, 0);
 $l_names[$a] = pg_fetch_result($result_2, $a, 0);
+$im[$a] = pg_fetch_result($result, $a, 1);
 $a++;
 }
 $a = 0;
 ?>
 <script>
-var i=0, k=1;
+var i=0;
 var arr = <?php echo json_encode($val); ?>;
+var k = <?php echo json_encode($im); ?>;
 var coun = <?php echo $coun; ?>;
 var l_name = <?php echo json_encode($l_names); ?>;
 while (i<coun) {
   
-  document.write('<div class="grid-item"><img src="' + k + '.jpg" height="190px" width="90%" border="1px" alt="" /><div class="overlay"><p class="ncol">' + arr[i] + ' ' + 'by ' + l_name[i] + '</p></div></div>')
-  i++, k++;
+  document.write('<div class="grid-item"><img src="' + k[i] + '.jpg" height="190px" width="90%" border="1px" alt="" /><div class="overlay"><p class="ncol">' + arr[i] + ' ' + 'by ' + l_name[i] + '</p></div></div>')
+  i++;
 }
  </script> 
 </div>

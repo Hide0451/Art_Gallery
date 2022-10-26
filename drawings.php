@@ -371,19 +371,21 @@ $start_num = pg_fetch_result($result, $a, 1);
 while($a < $coun) {
 $val[$a] = pg_fetch_result($result, $a, 0);
 $l_names[$a] = pg_fetch_result($result_2, $a, 0);
+$im[$a] = pg_fetch_result($result, $a, 1);
 $a++;
 }
 $a = 0;
 ?>
 <script>
-var i=0, k=<?php echo $start_num; ?>;;
+var i=0;
 var arr = <?php echo json_encode($val); ?>;
+var k = <?php echo json_encode($im); ?>;
 var coun = <?php echo $coun; ?>;
 var l_name = <?php echo json_encode($l_names); ?>;
 while (i<coun) {
   
-  document.write('<div class="grid-item"><img src="' + k + '.jpg" height="190px" width="90%" border="1px" alt="" /><div class="overlay"><p class="ncol">' + arr[i] + ' ' + 'by ' + l_name[i] + '</p></div></div>')
-  i++, k++;
+  document.write('<div class="grid-item"><img src="' + k[i] + '.jpg" height="190px" width="90%" border="1px" alt="" /><div class="overlay"><p class="ncol">' + arr[i] + ' ' + 'by ' + l_name[i] + '</p></div></div>')
+  i++;
 }
  </script> 
 </div>
