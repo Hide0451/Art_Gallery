@@ -295,7 +295,6 @@ span.psw {
 <a style="text-decoration:none" href="index.php" ><h2 class="example" align="center">Art Gallery</h2></a>
 <div id="navbar">
   <a href="index.php">Home</a>
-  <a href="index.php">Catalog</a>
   <a href="paintings.php">Paintings</a>
   <a class="active" href="photos.php">Photos</a>
   <a href="drawings.php">Drawings</a>
@@ -319,7 +318,7 @@ span.psw {
     </div>
 
     <div class="container">
-      <label for="uname"><b>Email</b></label>
+      <label for="uemail"><b>Email</b></label>
       <input type="text" placeholder="Enter Email" name="email" required>
 
       <label for="psw"><b>Password</b></label>
@@ -364,13 +363,13 @@ function myFunction() {
 $db_connection = pg_connect("host=localhost dbname=test user=postgres password=yo_password");
 $result = pg_query($db_connection, "SELECT pic_name, pic_id FROM pictures WHERE category_id = 1");
 $result_1 = pg_query($db_connection, "SELECT COUNT(*) FROM pictures WHERE category_id = 1");
-$result_2 = pg_query($db_connection, "SELECT last_name FROM employees INNER JOIN pictures ON employees.employee_id = pictures.author_id WHERE category_id = 1");
+$result_2 = pg_query($db_connection, "SELECT u_name FROM users INNER JOIN pictures ON users.user_id = pictures.author_id WHERE category_id = 1");
 $a = 0;
 $coun = pg_fetch_result($result_1, $a, 0);
 $start_num = pg_fetch_result($result, $a, 1);
 while($a < $coun) {
 $val[$a] = pg_fetch_result($result, $a, 0);
-$l_names[$a] = pg_fetch_result($result_2, $a, 0);
+$names[$a] = pg_fetch_result($result_2, $a, 0);
 $im[$a] = pg_fetch_result($result, $a, 1);
 $a++;
 }
@@ -381,10 +380,10 @@ var i=0;
 var arr = <?php echo json_encode($val); ?>;
 var k = <?php echo json_encode($im); ?>;
 var coun = <?php echo $coun; ?>;
-var l_name = <?php echo json_encode($l_names); ?>;
+var a_name = <?php echo json_encode($names); ?>;
 while (i<coun) {
   
-  document.write('<div class="grid-item"><img src="' + k[i] + '.jpg" height="190px" width="90%" border="1px" alt="" /><div class="overlay"><p class="ncol">' + arr[i] + ' ' + 'by ' + l_name[i] + '</p></div></div>')
+  document.write('<div class="grid-item"><img src="' + k[i] + '.jpg" height="190px" width="90%" border="1px" alt="" /><div class="overlay"><p class="ncol">' + arr[i] + ' ' + 'by ' + a_name[i] + '</p></div></div>')
   i++;
 }
  </script> 
