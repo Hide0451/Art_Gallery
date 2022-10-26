@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -294,9 +295,9 @@ span.psw {
 <body>
 <a style="text-decoration:none" href="index.php" ><h2 class="example" align="center">Art Gallery</h2></a>
 <div id="navbar">
-  <a class="active" href="index.php">Home</a>
+  <a href="index.php">Home</a>
   <a href="index.php">Catalog</a>
-  <a href="paintings.php">Paintings</a>
+  <a class="active" href="paintings.php">Paintings</a>
   <a href="photos.php">Photos</a>
   <a href="drawings.php">Drawings</a>
   <a href="about.php">About</a>
@@ -319,7 +320,7 @@ span.psw {
     </div>
 
     <div class="container">
-      <label for="email"><b>Email</b></label>
+      <label for="uname"><b>Email</b></label>
       <input type="text" placeholder="Enter Email" name="email" required>
 
       <label for="psw"><b>Password</b></label>
@@ -359,61 +360,15 @@ function myFunction() {
   }
 }
 </script>
-
-<div class="slideshow-container">
-
-<div class="mySlides fade">
-  <img src="1.jpg" height="300px" width="100%" border="1px" alt="">
-</div>
-
-<div class="mySlides fade">
-  <img src="2.jpg" height="300px" width="100%" border="1px" alt="">
-</div>
-
-<div class="mySlides fade">
-  <img src="3.jpg" height="300px" width="100%" border="1px" alt="">
-</div>
-<a class="prev" onclick="plusSlides(-1)">❮</a>
-<a class="next" onclick="plusSlides(1)">❯</a>
-</div>
-<br>
-
-<div style="text-align:left">
-  <span class="dot" onclick="currentSlide(1)"></span> 
-  <span class="dot" onclick="currentSlide(2)"></span> 
-  <span class="dot" onclick="currentSlide(3)"></span> 
-</div>
-
-<script>
-let slideIndex = 0;
-showSlides();
-
-function showSlides() {
-  let i;
-  let slides = document.getElementsByClassName("mySlides");
-  let dots = document.getElementsByClassName("dot");
-  for (i = 0; i < slides.length; i++) {
-    slides[i].style.display = "none";  
-  }
-  slideIndex++;
-  if (slideIndex > slides.length) {slideIndex = 1}    
-  for (i = 0; i < dots.length; i++) {
-    dots[i].className = dots[i].className.replace(" active", "");
-  }
-  slides[slideIndex-1].style.display = "block";  
-  dots[slideIndex-1].className += " active";
-  setTimeout(showSlides, 5000); // Change image every 5 seconds
-}
-</script>
-
 <div class="grid-container">
 <?php
 $db_connection = pg_connect("host=localhost dbname=test user=postgres password=yo_password");
-$result = pg_query($db_connection, "SELECT pic_name FROM pictures");
-$result_1 = pg_query($db_connection, "SELECT COUNT(*) FROM pictures");
-$result_2 = pg_query($db_connection, "SELECT last_name FROM employees INNER JOIN pictures ON employees.employee_id = pictures.author_id");
+$result = pg_query($db_connection, "SELECT pic_name, pic_id FROM pictures WHERE category_id = 2");
+$result_1 = pg_query($db_connection, "SELECT COUNT(*) FROM pictures WHERE category_id = 2");
+$result_2 = pg_query($db_connection, "SELECT last_name FROM employees INNER JOIN pictures ON employees.employee_id = pictures.author_id WHERE category_id = 2");
 $a = 0;
 $coun = pg_fetch_result($result_1, $a, 0);
+$start_num = pg_fetch_result($result, $a, 1);
 while($a < $coun) {
 $val[$a] = pg_fetch_result($result, $a, 0);
 $l_names[$a] = pg_fetch_result($result_2, $a, 0);
@@ -422,7 +377,7 @@ $a++;
 $a = 0;
 ?>
 <script>
-var i=0, k=1;
+var i=0, k=<?php echo $start_num; ?>;;
 var arr = <?php echo json_encode($val); ?>;
 var coun = <?php echo $coun; ?>;
 var l_name = <?php echo json_encode($l_names); ?>;
