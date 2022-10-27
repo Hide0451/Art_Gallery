@@ -167,7 +167,7 @@ p.ncol {
   padding: 20px;
   text-align: center;
 }
-.grid-container:hover .overlay {
+.grid-item:hover .overlay {
   opacity: 1;
 </style>
 <style>

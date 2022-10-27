@@ -70,7 +70,7 @@ img {vertical-align: middle;}
 .slideshow-container {
   max-width: 600px;
   position: relative;
-  margin: 20px;
+  margin: 5px;
 }
 
 /* Next & previous buttons */
@@ -138,7 +138,7 @@ img {vertical-align: middle;}
 .grid-item {
   background-color: rgba(40, 40, 40,.98);
   border: 1px solid rgba(0, 0, 0, 0.4);
-  padding: 20px;
+  padding: 5px;
   font-size: 30px;
   text-align: center;
 }
@@ -150,7 +150,7 @@ p.name_color {
     color: #00b359;
 }
 p.ncol {
-    color: white
+    color: white;
 }
 .overlay {
   position: relative;
@@ -163,10 +163,10 @@ p.ncol {
   opacity:0;
   color: white;
   font-size: 20px;
-  padding: 20px;
+  padding: 5px;
   text-align: center;
 }
-.grid-container:hover .overlay {
+.grid-item:hover .overlay {
   opacity: 1;
 </style>
 <style>
@@ -289,6 +289,7 @@ span.psw {
 ::-webkit-scrollbar-thumb:hover {
   background: #E0E0E0; 
 }
+
 </style>
 </head>
 <body>
@@ -392,11 +393,11 @@ function myFunction() {
   }
 }
 </script>
-
+<table width="95%" align="center">
+<td align="left" width="70%">
 <div class="slideshow-container">
-
 <div class="mySlides fade">
-  <img src="1.jpg" height="300px" width="100%" border="1px" alt="">
+<img src="1.jpg" height="300px" width="100%" border="1px" alt="">
 </div>
 
 <div class="mySlides fade">
@@ -408,15 +409,17 @@ function myFunction() {
 </div>
 <a class="prev" onclick="plusSlides(-1)">❮</a>
 <a class="next" onclick="plusSlides(1)">❯</a>
-</div>
 <br>
-
-<div style="text-align:left">
+<div style="text-align:center">
   <span class="dot" onclick="currentSlide(1)"></span> 
   <span class="dot" onclick="currentSlide(2)"></span> 
   <span class="dot" onclick="currentSlide(3)"></span> 
 </div>
-
+</div>
+</td>
+<td><p class="ncol">Welcome to Art Gallery!
+A place where you can find a lot of art work from famous artists!</p></td>
+</table>
 <script>
 let slideIndex = 0;
 showSlides();
@@ -463,7 +466,7 @@ var coun = <?php echo $coun; ?>;
 var a_name = <?php echo json_encode($names); ?>;
 while (i<coun) {
   
-  document.write('<div class="grid-item"><img src="' + k[i] + '.jpg" height="190px" width="90%" border="1px" alt="" /><div class="overlay"><p class="ncol">' + arr[i] + ' ' + 'by ' + a_name[i] + '</p></div></div>')
+  document.write('<div class="grid-item"><img src="' + k[i] + '.jpg" height="190px" width="90%" border="1px" alt="" /><div class="overlay"><p class="ncol">' + arr[i] + ' ' + 'by ' + a_name[i] + '</p></div></div>');
   i++;
 }
  </script> 
