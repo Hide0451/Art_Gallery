@@ -42,7 +42,7 @@ hr {
 
 /* Set a style for the submit button */
 .registerbtn {
-  background-color: #04AA6D;
+  background-color: #00b359;
   color: white;
   padding: 16px 20px;
   margin: 8px 0;
@@ -70,13 +70,16 @@ a {
 </head>
 <body>
 
-<form action="/action_page.php">
+<form action="index.php" method="post">
   <div class="container">
     <h1>Register</h1>
     <p>Please fill in this form to create an account.</p>
     <hr>
 
-    <label for="email"><b>Email</b></label>
+    <label for="uname"><b>Name</b></label>
+    <input type="text" placeholder="Enter Name" name="name" id="name" required>
+	
+    <label for="uemail"><b>Email</b></label>
     <input type="text" placeholder="Enter Email" name="email" id="email" required>
 
     <label for="psw"><b>Password</b></label>
@@ -84,6 +87,11 @@ a {
 
     <label for="psw-repeat"><b>Repeat Password</b></label>
     <input type="password" placeholder="Repeat Password" name="psw-repeat" id="psw-repeat" required>
+	
+	<label for="cbox"><b>Author?</b></label>
+	<input type="hidden" name="author" value="0" />
+    <input type="checkbox" placeholder="author" name="author" id="author" value="1">
+	  
     <hr>
     <p>By creating an account you agree to our <a href="#">Terms & Privacy</a>.</p>
 
@@ -91,7 +99,7 @@ a {
   </div>
   
   <div class="container signin">
-    <p>Already have an account? <a href="#">Sign in</a>.</p>
+    <p>Already have an account? <a href="index.php">Sign in</a>.</p>
   </div>
 </form>
 
