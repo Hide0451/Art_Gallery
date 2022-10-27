@@ -304,15 +304,33 @@ span.psw {
   <a href="search.php">Search</a>
   <div class="navbar">
   <div class="log_in_and_reg">
-	<button onclick="document.getElementById('id01').style.display='block'" style="width:auto;">Log in</button>
-	<button  onclick="window.location.href='register.php'" style="width:auto;">Register</button>
+  <?php
+  if (isset($_POST["email"])) {
+	  $user_email = $_POST["email"];
+	  $user_password = $_POST["psw"];
+	  $db_connection = pg_connect("host=localhost dbname=test user=postgres password=yo_password");
+	  $result = pg_query($db_connection, "SELECT u_email, u_password, u_name FROM users WHERE u_email='$user_email' AND u_password = '$user_password'");
+	  $num_r = pg_num_rows($result);
+	  if ($num_r !== 0) {
+		  $user_email_r = pg_fetch_result($result, 0, 0);
+	      $user_password_r = pg_fetch_result($result, 0, 1);
+		  $u_n = pg_fetch_result($result, 0, 2);
+		  echo "<a>$u_n</a>";
+	    }
+		else echo "<button onclick=document.getElementById('id01').style.display='block' style=width:auto;>Log in</button>
+	      <button  onclick=window.location.href='register.php' style=width:auto;>Register</button>
+		  <script>alert('Wrong Email or Password')</script>";
+    }
+	else echo "<button onclick=document.getElementById('id01').style.display='block' style=width:auto;>Log in</button>
+	<button  onclick=window.location.href='register.php' style=width:auto;>Register</button>";
+  ?>
   </div>
 </div>
 </div>
 
 <div id="id01" class="modal">
   
-  <form class="modal-content animate" action="/action_page.php" method="post">
+  <form class="modal-content animate" action="drawings.php" method="post">
     <div class="imgcontainer">
       <span onclick="document.getElementById('id01').style.display='none'" class="close" title="Close Modal">&times;</span>
     </div>
