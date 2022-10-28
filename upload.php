@@ -70,7 +70,7 @@ img {vertical-align: middle;}
 .slideshow-container {
   max-width: 600px;
   position: relative;
-  margin: 20px;
+  margin: 5px;
 }
 
 /* Next & previous buttons */
@@ -292,14 +292,75 @@ span.psw {
 ::-webkit-scrollbar-thumb:hover {
   background: #E0E0E0; 
 }
+
+</style>
+<style>
+* {
+  box-sizing: border-box;
+}
+
+/* Add padding to containers */
+.container {
+  padding: 16px;
+  background-color: #0f0f0f;
+  color: white;
+}
+
+/* Full-width input fields */
+input[type=text], input[type=password] {
+  width: 100%;
+  padding: 15px;
+  margin: 5px 0 22px 0;
+  display: inline-block;
+  border: none;
+  background: #f1f1f1;
+}
+
+input[type=text]:focus, input[type=password]:focus {
+  background-color: #ddd;
+  outline: none;
+}
+
+/* Overwrite default styles of hr */
+hr {
+  border: 1px solid #f1f1f1;
+  margin-bottom: 25px;
+}
+
+/* Set a style for the submit button */
+.registerbtn {
+  background-color: #00b359;
+  color: white;
+  padding: 16px 20px;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  opacity: 0.9;
+}
+
+.registerbtn:hover {
+  opacity: 1;
+}
+
+/* Add a blue text color to links */
+a {
+  color: dodgerblue;
+}
+
+/* Set a grey background color and center the text of the "sign in" section */
+.signin {
+  background-color: #333;
+  text-align: center;
+}
 </style>
 </head>
 <body>
 <a style="text-decoration:none" href="index.php" ><h2 class="example" align="center">Art Gallery</h2></a>
 <div id="navbar">
-  <a href="index.php">Home</a>
+  <a class="active" href="index.php">Home</a>
   <a href="paintings.php">Paintings</a>
-  <a class="active" href="photos.php">Photos</a>
+  <a href="photos.php">Photos</a>
   <a href="drawings.php">Drawings</a>
   <a href="about.php">About</a>
   <a href="contact.php">Contact</a>
@@ -308,48 +369,92 @@ span.psw {
   <div class="navbar">
   <div class="log_in_and_reg">
   <?php
-  if (isset($_POST["email"])) {
-	  if (isset($_POST["name"])) {
-		  $us_name = $_POST["name"];
+  if (isset($_POST["p_name"])) {
 		  $tmp = array(
-		  'u_name' => $_POST["name"],
-		  'u_email' => $_POST["email"],
-		  'u_password' => $_POST["psw"],
-		  'author' => $_POST["author"]
-		  );
+		  'pic_name' => $_POST["p_name"],
+		  'author_id' => $_POST["a_id"],
+		  'category_id' => $_POST["c_id"],
+		  'genre_id' => $_POST["g_id"],
+		  'year_taken' => $_POST["year_t"]);
 		  $db_connection = pg_connect("host=localhost dbname=test user=postgres password=yo_password");
-		  pg_insert($db_connection, 'users', $tmp);;
-		  echo "<a>$us_name</a>";
-		}
-	  else {
-		  $user_email = $_POST["email"];
-		  $user_password = $_POST["psw"];
-		  $db_connection = pg_connect("host=localhost dbname=test user=postgres password=yo_password");
-		  $result = pg_query($db_connection, "SELECT u_email, u_password, u_name FROM users WHERE u_email='$user_email' AND u_password = '$user_password'");
-		  $num_r = pg_num_rows($result);
-		  if ($num_r !== 0) {
-			  $user_email_r = pg_fetch_result($result, 0, 0);
-			  $user_password_r = pg_fetch_result($result, 0, 1);
-			  $u_n = pg_fetch_result($result, 0, 2);
-			  echo "<a>$u_n</a>";
+		  pg_insert($db_connection, 'pictures', $tmp);
+		  echo "<button onclick=document.getElementById('id01').style.display='block' style=width:auto;>Log in</button>
+		  <button  onclick=window.location.href='register.php' style=width:auto;>Register</button>";
+    }
+	else {
+		if (isset($_POST["email"])) {
+			if (isset($_POST["name"])) {
+				$us_name = $_POST["name"];
+				$tmp = array(
+				'u_name' => $_POST["name"],
+				'u_email' => $_POST["email"],
+				'u_password' => $_POST["psw"],
+				'author' => $_POST["author"]
+				);
+				$db_connection = pg_connect("host=localhost dbname=test user=postgres password=yo_password");
+				pg_insert($db_connection, 'users', $tmp);
+				echo "<a>$us_name</a>";
 			}
 			else {
-				echo "<button onclick=document.getElementById('id01').style.display='block' style=width:auto;>Log in</button>
-				<button  onclick=window.location.href='register.php' style=width:auto;>Register</button>
-				<script>alert('Wrong Email or Password')</script>";
+				$user_email = $_POST["email"];
+				$user_password = $_POST["psw"];
+				$db_connection = pg_connect("host=localhost dbname=test user=postgres password=yo_password");
+				$result = pg_query($db_connection, "SELECT u_email, u_password, u_name, author FROM users WHERE u_email='$user_email' AND u_password = '$user_password'");
+				$num_r = pg_num_rows($result);
+				if ($num_r !== 0) {
+					$user_email_r = pg_fetch_result($result, 0, 0);
+					$user_password_r = pg_fetch_result($result, 0, 1);
+					$u_n = pg_fetch_result($result, 0, 2);
+					$aur = pg_fetch_result($result, 0, 3);
+					echo "<a>$u_n</a>";
+				}
+				else {
+					echo "<button onclick=document.getElementById('id01').style.display='block' style=width:auto;>Log in</button>
+					<button  onclick=window.location.href='register.php' style=width:auto;>Register</button>
+					<script>alert('Wrong Email or Password')</script>";
+				}
 			}
 		}
+		else { echo "<button onclick=document.getElementById('id01').style.display='block' style=width:auto;>Log in</button>
+		<button  onclick=window.location.href='register.php' style=width:auto;>Register</button>";
+		}
 	}
-	else echo "<button onclick=document.getElementById('id01').style.display='block' style=width:auto;>Log in</button>
-	<button  onclick=window.location.href='register.php' style=width:auto;>Register</button>";
-  ?>
+	?>
   </div>
 </div>
 </div>
+  <form action="upload.php" method="post">
+  <div class="container">
+  <h3>Upload image</h3>
+  <p>Please fill in this form to upload your image.</p><hr>
+  <label for="p_name"><b>Name</b></label>
+  <input type="text" placeholder="Enter Name" name="p_name" id="p_name">
+  <label for="a_id"><b>Author Id</b></label>
+  <input type="text" placeholder="Enter Author" name="a_id" id="a_id">
+  <label for="c_id"><b>Category Id</b></label>
+  <input type="text" placeholder="Enter Category" name="c_id" id="c_id">
+  <label for="g_id"><b>Genre Id</b></label>
+  <input type="text" placeholder="Enter Genre" name="g_id" id="g_id">
+  <label for="year_t"><b>Year Taken</b></label>
+  <input type="text" placeholder="Enter Year" name="year_t" id="year_t">
+  <script>
+  var a = <?php echo $aur; ?>;
+  if (a == 1) {
+	  document.write('<button type="submit" class="registerbtn">Upload</button>');
+    }
+	else {
+	alert('Sorry! It looks like you don\'t have rights to to upload images.');
+	}
+  </script>
+  </div>
+  <div class="container signin">
+  <p>Don't have an account? <a href="register.php">Register Now</a>.</p>
+  </div>
+  </form>
 
 <div id="id01" class="modal">
   
-  <form class="modal-content animate" action="photos.php" method="post">
+  <form class="modal-content animate" action="upload.php" method="post">
     <div class="imgcontainer">
       <span onclick="document.getElementById('id01').style.display='none'" class="close" title="Close Modal">&times;</span>
     </div>
@@ -388,70 +493,12 @@ var navbar = document.getElementById("navbar");
 var sticky = navbar.offsetTop;
 
 function myFunction() {
-  if (window.pageYOffset >= sticky) {
-    navbar.classList.add("sticky")
-  } else {
-    navbar.classList.remove("sticky");
-  }
-}
-</script>
-<div class="grid-container">
-<?php
-$db_connection = pg_connect("host=localhost dbname=test user=postgres password=yo_password");
-$result = pg_query($db_connection, "SELECT pic_name, pic_id FROM pictures WHERE category_id = 1");
-$result_1 = pg_query($db_connection, "SELECT COUNT(*) FROM pictures WHERE category_id = 1");
-$result_2 = pg_query($db_connection, "SELECT u_name FROM users INNER JOIN pictures ON users.user_id = pictures.author_id WHERE category_id = 1");
-$a = 0;
-$coun = pg_fetch_result($result_1, $a, 0);
-$start_num = pg_fetch_result($result, $a, 1);
-while($a < $coun) {
-$val[$a] = pg_fetch_result($result, $a, 0);
-$names[$a] = pg_fetch_result($result_2, $a, 0);
-$im[$a] = pg_fetch_result($result, $a, 1);
-$a++;
-}
-$a = 0;
-?>
-<script>
-var i=0;
-var arr = <?php echo json_encode($val); ?>;
-var k = <?php echo json_encode($im); ?>;
-var coun = <?php echo $coun; ?>;
-var a_name = <?php echo json_encode($names); ?>;
-while (i<coun) {
-  
-  document.write('<div class="grid-item" id="' + k[i] + '"><button class="expand" id="' + k[i] + '" onclick="document.getElementById(\'id02\').style.display=\'block\';updateRecord(this)"><img src="' + k[i] + '.jpg" height="190px" width="90%" border="1px" alt="" /><div class="overlay"><p class="ncol">' + arr[i] + ' ' + 'by ' + a_name[i] + '</p></div></button></div>');
-  i++;
-}
-</script>
-</div>
-<script>
-	function updateRecord(button){
-		var id = button.id;
-	  document.write('<img src="' + id + '.jpg">');
+	if (window.pageYOffset >= sticky) {
+		navbar.classList.add("sticky")
 	}
-</script>
-<div id="id02" class="modal">
-  
-  <form class="modal-content animate">
-    <div class="imgcontainer">
-      <span onclick="document.getElementById('id02').style.display='none'" class="close" title="Close Modal">&times;</span>
-    </div>
-
-    <div class="container">
-    </div>
-  </form>
-</div>
-
-<script>
-// Get the modal
-var modal = document.getElementById('id02');
-
-// When the user clicks anywhere outside of the modal, close it
-window.onclick = function(event) {
-    if (event.target == modal) {
-        modal.style.display = "none";
-    }
+	else {
+		navbar.classList.remove("sticky");
+	}
 }
 </script>
 </body>

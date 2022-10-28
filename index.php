@@ -149,6 +149,9 @@ h2.example {
 p.name_color {
     color: #00b359;
 }
+button.expand {
+	background-color: rgba(40, 40, 40,.98);
+}
 p.ncol {
     color: white;
 }
@@ -359,7 +362,7 @@ span.psw {
       <label for="psw"><b>Password</b></label>
       <input type="password" placeholder="Enter Password" name="psw" required>
         
-      <button type="submit">Login</button>
+      <button type="submit">Log in</button>
       <label>
         <input type="checkbox" checked="checked" name="remember"> Remember me
       </label>
@@ -418,7 +421,7 @@ function myFunction() {
 </div>
 </td>
 <td><p class="ncol">Welcome to Art Gallery!
-A place where you can find a lot of art work from famous artists!</p></td>
+A place where you can find a lot of artwork from famous artists!</p></td>
 </table>
 <script>
 let slideIndex = 0;
@@ -466,10 +469,39 @@ var coun = <?php echo $coun; ?>;
 var a_name = <?php echo json_encode($names); ?>;
 while (i<coun) {
   
-  document.write('<div class="grid-item"><img src="' + k[i] + '.jpg" height="190px" width="90%" border="1px" alt="" /><div class="overlay"><p class="ncol">' + arr[i] + ' ' + 'by ' + a_name[i] + '</p></div></div>');
+  document.write('<div class="grid-item" id="' + k[i] + '"><button class="expand" id="' + k[i] + '" onclick="document.getElementById(\'id02\').style.display=\'block\';updateRecord(this)"><img src="' + k[i] + '.jpg" height="190px" width="90%" border="1px" alt="" /><div class="overlay"><p class="ncol">' + arr[i] + ' ' + 'by ' + a_name[i] + '</p></div></button></div>');
   i++;
 }
- </script> 
+</script>
 </div>
+<script>
+	function updateRecord(button){
+		var id = button.id;
+	  document.write('<img src="' + id + '.jpg">');
+	}
+</script>
+<div id="id02" class="modal">
+  
+  <form class="modal-content animate">
+    <div class="imgcontainer">
+      <span onclick="document.getElementById('id02').style.display='none'" class="close" title="Close Modal">&times;</span>
+    </div>
+
+    <div class="container">
+    </div>
+  </form>
+</div>
+
+<script>
+// Get the modal
+var modal = document.getElementById('id02');
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+</script>
 </body>
 </html>

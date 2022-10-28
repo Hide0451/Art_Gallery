@@ -138,7 +138,7 @@ img {vertical-align: middle;}
 .grid-item {
   background-color: rgba(40, 40, 40,.98);
   border: 1px solid rgba(0, 0, 0, 0.4);
-  padding: 20px;
+  padding: 5px;
   font-size: 30px;
   text-align: center;
 }
@@ -148,6 +148,9 @@ h2.example {
 }
 p.name_color {
     color: #00b359;
+}
+button.expand {
+	background-color: rgba(40, 40, 40,.98);
 }
 p.ncol {
     color: white;
@@ -163,7 +166,7 @@ p.ncol {
   opacity:0;
   color: white;
   font-size: 20px;
-  padding: 20px;
+  padding: 5px;
   text-align: center;
 }
 .grid-item:hover .overlay {
@@ -306,21 +309,37 @@ span.psw {
   <div class="log_in_and_reg">
   <?php
   if (isset($_POST["email"])) {
-	  $user_email = $_POST["email"];
-	  $user_password = $_POST["psw"];
-	  $db_connection = pg_connect("host=localhost dbname=test user=postgres password=yo_password");
-	  $result = pg_query($db_connection, "SELECT u_email, u_password, u_name FROM users WHERE u_email='$user_email' AND u_password = '$user_password'");
-	  $num_r = pg_num_rows($result);
-	  if ($num_r !== 0) {
-		  $user_email_r = pg_fetch_result($result, 0, 0);
-	      $user_password_r = pg_fetch_result($result, 0, 1);
-		  $u_n = pg_fetch_result($result, 0, 2);
-		  echo "<a>$u_n</a>";
-	    }
-		else echo "<button onclick=document.getElementById('id01').style.display='block' style=width:auto;>Log in</button>
-	      <button  onclick=window.location.href='register.php' style=width:auto;>Register</button>
-		  <script>alert('Wrong Email or Password')</script>";
-    }
+	  if (isset($_POST["name"])) {
+		  $us_name = $_POST["name"];
+		  $tmp = array(
+		  'u_name' => $_POST["name"],
+		  'u_email' => $_POST["email"],
+		  'u_password' => $_POST["psw"],
+		  'author' => $_POST["author"]
+		  );
+		  $db_connection = pg_connect("host=localhost dbname=test user=postgres password=yo_password");
+		  pg_insert($db_connection, 'users', $tmp);;
+		  echo "<a>$us_name</a>";
+		}
+	  else {
+		  $user_email = $_POST["email"];
+		  $user_password = $_POST["psw"];
+		  $db_connection = pg_connect("host=localhost dbname=test user=postgres password=yo_password");
+		  $result = pg_query($db_connection, "SELECT u_email, u_password, u_name FROM users WHERE u_email='$user_email' AND u_password = '$user_password'");
+		  $num_r = pg_num_rows($result);
+		  if ($num_r !== 0) {
+			  $user_email_r = pg_fetch_result($result, 0, 0);
+			  $user_password_r = pg_fetch_result($result, 0, 1);
+			  $u_n = pg_fetch_result($result, 0, 2);
+			  echo "<a>$u_n</a>";
+			}
+			else {
+				echo "<button onclick=document.getElementById('id01').style.display='block' style=width:auto;>Log in</button>
+				<button  onclick=window.location.href='register.php' style=width:auto;>Register</button>
+				<script>alert('Wrong Email or Password')</script>";
+			}
+		}
+	}
 	else echo "<button onclick=document.getElementById('id01').style.display='block' style=width:auto;>Log in</button>
 	<button  onclick=window.location.href='register.php' style=width:auto;>Register</button>";
   ?>
@@ -342,7 +361,7 @@ span.psw {
       <label for="psw"><b>Password</b></label>
       <input type="password" placeholder="Enter Password" name="psw" required>
         
-      <button type="submit">Login</button>
+      <button type="submit">Log in</button>
       <label>
         <input type="checkbox" checked="checked" name="remember"> Remember me
       </label>
@@ -401,10 +420,39 @@ var coun = <?php echo $coun; ?>;
 var a_name = <?php echo json_encode($names); ?>;
 while (i<coun) {
   
-  document.write('<div class="grid-item"><img src="' + k[i] + '.jpg" height="190px" width="90%" border="1px" alt="" /><div class="overlay"><p class="ncol">' + arr[i] + ' ' + 'by ' + a_name[i] + '</p></div></div>')
+  document.write('<div class="grid-item" id="' + k[i] + '"><button class="expand" id="' + k[i] + '" onclick="document.getElementById(\'id02\').style.display=\'block\';updateRecord(this)"><img src="' + k[i] + '.jpg" height="190px" width="90%" border="1px" alt="" /><div class="overlay"><p class="ncol">' + arr[i] + ' ' + 'by ' + a_name[i] + '</p></div></button></div>');
   i++;
 }
- </script> 
+</script>
 </div>
+<script>
+	function updateRecord(button){
+		var id = button.id;
+	  document.write('<img src="' + id + '.jpg">');
+	}
+</script>
+<div id="id02" class="modal">
+  
+  <form class="modal-content animate">
+    <div class="imgcontainer">
+      <span onclick="document.getElementById('id02').style.display='none'" class="close" title="Close Modal">&times;</span>
+    </div>
+
+    <div class="container">
+    </div>
+  </form>
+</div>
+
+<script>
+// Get the modal
+var modal = document.getElementById('id02');
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+</script>
 </body>
 </html>
