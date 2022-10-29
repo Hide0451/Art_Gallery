@@ -354,6 +354,68 @@ a {
   text-align: center;
 }
 </style>
+<style>
+/*the container must be positioned relative:*/
+.custom-select {
+  position: relative;
+  font-family: Arial;
+}
+
+.custom-select select {
+  display: none; /*hide original SELECT element:*/
+}
+
+.select-selected {
+  background-color: #333;
+}
+
+/*style the arrow inside the select element:*/
+.select-selected:after {
+  position: absolute;
+  content: "";
+  top: 14px;
+  right: 10px;
+  width: 0;
+  height: 0;
+  border: 6px solid transparent;
+  border-color: #fff transparent transparent transparent;
+}
+
+/*point the arrow upwards when the select box is open (active):*/
+.select-selected.select-arrow-active:after {
+  border-color: transparent transparent #fff transparent;
+  top: 7px;
+}
+
+/*style the items (options), including the selected item:*/
+.select-items div,.select-selected {
+  color: #ffffff;
+  padding: 4px 8px;
+  border: 1px solid transparent;
+  border-color: transparent transparent rgba(0, 0, 0, 0.1) transparent;
+  cursor: pointer;
+  user-select: none;
+}
+
+/*style items (options):*/
+.select-items {
+  position: absolute;
+  background-color: #333;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 99;
+}
+
+/*hide the items when the select box is closed:*/
+.select-hide {
+  display: none;
+}
+
+.select-items div:hover, .same-as-selected {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+</style>
 </head>
 <body>
 <a style="text-decoration:none" href="index.php" ><h2 class="example" align="center">Art Gallery</h2></a>
@@ -370,16 +432,31 @@ a {
   <div class="log_in_and_reg">
   <?php
   if (isset($_POST["p_name"])) {
-		  $tmp = array(
-		  'pic_name' => $_POST["p_name"],
-		  'author_id' => $_POST["a_id"],
-		  'category_id' => $_POST["c_id"],
-		  'genre_id' => $_POST["g_id"],
-		  'year_taken' => $_POST["year_t"]);
+	      $author_n = $_POST["a_id"];
 		  $db_connection = pg_connect("host=localhost dbname=test user=postgres password=yo_password");
-		  pg_insert($db_connection, 'pictures', $tmp);
-		  echo "<button onclick=document.getElementById('id01').style.display='block' style=width:auto;>Log in</button>
-		  <button  onclick=window.location.href='register.php' style=width:auto;>Register</button>";
+		  $result = pg_query($db_connection, "SELECT u_name, user_id, author FROM users WHERE u_name = '$author_n'");
+		  $num_r = pg_num_rows($result);
+		  $check_c = $_POST["c_id"];
+		  $check_g = $_POST["g_id"];
+		  if ($num_r <> 0 and pg_fetch_result($result, 0, 2) == 1 and $check_c <> 0 and $check_g <> 0) {
+			  $author_id = pg_fetch_result($result, 0, 1);
+			  $tmp = array(
+			  'pic_name' => $_POST["p_name"],
+			  'author_id' => $author_id,
+			  'category_id' => $_POST["c_id"],
+			  'genre_id' => $_POST["g_id"],
+			  'year_taken' => $_POST["year_t"]);
+			  $db_connection = pg_connect("host=localhost dbname=test user=postgres password=yo_password");
+			  pg_insert($db_connection, 'pictures', $tmp);
+			  echo "<button onclick=document.getElementById('id01').style.display='block' style=width:auto;>Log in</button>
+			  <button  onclick=window.location.href='register.php' style=width:auto;>Register</button>
+			  <script>alert('Image successfully uploaded.')</script>";
+		  }
+		  else {
+			  echo "<button onclick=document.getElementById('id01').style.display='block' style=width:auto;>Log in</button>
+			  <button  onclick=window.location.href='register.php' style=width:auto;>Register</button>
+			  <script>alert('The author with the name you entered does not exist or he does not have rights')</script>";
+		    }
     }
 	else {
 		if (isset($_POST["email"])) {
@@ -401,7 +478,7 @@ a {
 				$db_connection = pg_connect("host=localhost dbname=test user=postgres password=yo_password");
 				$result = pg_query($db_connection, "SELECT u_email, u_password, u_name, author FROM users WHERE u_email='$user_email' AND u_password = '$user_password'");
 				$num_r = pg_num_rows($result);
-				if ($num_r !== 0) {
+				if ($num_r <> 0) {
 					$user_email_r = pg_fetch_result($result, 0, 0);
 					$user_password_r = pg_fetch_result($result, 0, 1);
 					$u_n = pg_fetch_result($result, 0, 2);
@@ -429,12 +506,44 @@ a {
   <p>Please fill in this form to upload your image.</p><hr>
   <label for="p_name"><b>Name</b></label>
   <input type="text" placeholder="Enter Name" name="p_name" id="p_name">
-  <label for="a_id"><b>Author Id</b></label>
+  <label for="a_id"><b>Author name</b></label>
   <input type="text" placeholder="Enter Author" name="a_id" id="a_id">
-  <label for="c_id"><b>Category Id</b></label>
-  <input type="text" placeholder="Enter Category" name="c_id" id="c_id">
-  <label for="g_id"><b>Genre Id</b></label>
-  <input type="text" placeholder="Enter Genre" name="g_id" id="g_id">
+  <table>
+  <td>
+  <label for="c_id"><b>Category: </b></label>
+  </td>
+  <td>
+  <div class="custom-select" style="width:230px;">
+  <select id="c_id" name="c_id">
+    <option value="0">Select category</option>
+    <option value="1">Photo</option>
+    <option value="2">Painting</option>
+    <option value="3">Drawing</option>
+  </select>
+  </div>
+  </td>
+  </table>
+  <hr>
+  <table>
+  <td>
+  <label for="g_id"><b>Genre: </b></label>
+  </td>
+  <td>
+  <div class="custom-select" style="width:200px;">
+  <select id="g_id" name="g_id">
+    <option value="0">Select genre</option>
+    <option value="1">People</option>
+    <option value="2">Nature</option>
+    <option value="3">Animals</option>
+	<option value="4">Characters</option>
+    <option value="5">History</option>
+    <option value="6">Architecture</option>
+	<option value="7">Other</option>
+  </select>
+  </div>
+  </td>
+  </table>
+  <hr>
   <label for="year_t"><b>Year Taken</b></label>
   <input type="text" placeholder="Enter Year" name="year_t" id="year_t">
   <script>
@@ -501,5 +610,86 @@ function myFunction() {
 	}
 }
 </script>
+<script>
+var x, i, j, l, ll, selElmnt, a, b, c;
+/*look for any elements with the class "custom-select":*/
+x = document.getElementsByClassName("custom-select");
+l = x.length;
+for (i = 0; i < l; i++) {
+  selElmnt = x[i].getElementsByTagName("select")[0];
+  ll = selElmnt.length;
+  /*for each element, create a new DIV that will act as the selected item:*/
+  a = document.createElement("DIV");
+  a.setAttribute("class", "select-selected");
+  a.innerHTML = selElmnt.options[selElmnt.selectedIndex].innerHTML;
+  x[i].appendChild(a);
+  /*for each element, create a new DIV that will contain the option list:*/
+  b = document.createElement("DIV");
+  b.setAttribute("class", "select-items select-hide");
+  for (j = 1; j < ll; j++) {
+    /*for each option in the original select element,
+    create a new DIV that will act as an option item:*/
+    c = document.createElement("DIV");
+    c.innerHTML = selElmnt.options[j].innerHTML;
+    c.addEventListener("click", function(e) {
+        /*when an item is clicked, update the original select box,
+        and the selected item:*/
+        var y, i, k, s, h, sl, yl;
+        s = this.parentNode.parentNode.getElementsByTagName("select")[0];
+        sl = s.length;
+        h = this.parentNode.previousSibling;
+        for (i = 0; i < sl; i++) {
+          if (s.options[i].innerHTML == this.innerHTML) {
+            s.selectedIndex = i;
+            h.innerHTML = this.innerHTML;
+            y = this.parentNode.getElementsByClassName("same-as-selected");
+            yl = y.length;
+            for (k = 0; k < yl; k++) {
+              y[k].removeAttribute("class");
+            }
+            this.setAttribute("class", "same-as-selected");
+            break;
+          }
+        }
+        h.click();
+    });
+    b.appendChild(c);
+  }
+  x[i].appendChild(b);
+  a.addEventListener("click", function(e) {
+      /*when the select box is clicked, close any other select boxes,
+      and open/close the current select box:*/
+      e.stopPropagation();
+      closeAllSelect(this);
+      this.nextSibling.classList.toggle("select-hide");
+      this.classList.toggle("select-arrow-active");
+    });
+}
+function closeAllSelect(elmnt) {
+  /*a function that will close all select boxes in the document,
+  except the current select box:*/
+  var x, y, i, xl, yl, arrNo = [];
+  x = document.getElementsByClassName("select-items");
+  y = document.getElementsByClassName("select-selected");
+  xl = x.length;
+  yl = y.length;
+  for (i = 0; i < yl; i++) {
+    if (elmnt == y[i]) {
+      arrNo.push(i)
+    } else {
+      y[i].classList.remove("select-arrow-active");
+    }
+  }
+  for (i = 0; i < xl; i++) {
+    if (arrNo.indexOf(i)) {
+      x[i].classList.add("select-hide");
+    }
+  }
+}
+/*if the user clicks anywhere outside the select box,
+then close all select boxes:*/
+document.addEventListener("click", closeAllSelect);
+</script>
+
 </body>
 </html>

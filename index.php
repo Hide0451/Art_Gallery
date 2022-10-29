@@ -328,7 +328,7 @@ span.psw {
 		  $db_connection = pg_connect("host=localhost dbname=test user=postgres password=yo_password");
 		  $result = pg_query($db_connection, "SELECT u_email, u_password, u_name FROM users WHERE u_email='$user_email' AND u_password = '$user_password'");
 		  $num_r = pg_num_rows($result);
-		  if ($num_r !== 0) {
+		  if ($num_r <> 0) {
 			  $user_email_r = pg_fetch_result($result, 0, 0);
 			  $user_password_r = pg_fetch_result($result, 0, 1);
 			  $u_n = pg_fetch_result($result, 0, 2);
