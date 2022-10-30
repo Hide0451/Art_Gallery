@@ -84,9 +84,6 @@ a {
 
     <label for="psw"><b>Password</b></label>
     <input type="password" placeholder="Enter Password" name="psw" id="psw" required>
-
-    <label for="psw-repeat"><b>Repeat Password</b></label>
-    <input type="password" placeholder="Repeat Password" name="psw-repeat" id="psw-repeat" required>
 	
 	<label for="cbox"><b>Author?</b></label>
 	<input type="hidden" name="author" value="0" />

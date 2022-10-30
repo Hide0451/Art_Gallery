@@ -426,19 +426,19 @@ a {
   <a href="drawings.php">Drawings</a>
   <a href="about.php">About</a>
   <a href="contact.php">Contact</a>
-  <a class="active" href="upload.php">Upload</a>
-  <a href="search.php">Search</a>
+  <a href="upload.php">Upload</a>
+  <a class="active" href="search.php">Search</a>
   <div class="navbar">
   <div class="log_in_and_reg">
   <?php
+  $db_connection = pg_connect("host=localhost dbname=test user=postgres password=yo_password");
   if (isset($_POST["p_name"])) {
 	      $author_n = $_POST["a_id"];
-		  $db_connection = pg_connect("host=localhost dbname=test user=postgres password=yo_password");
-		  $result = pg_query($db_connection, "SELECT u_name, user_id, author FROM users WHERE u_name = '$author_n'");
+		  $result = pg_query($db_connection, "SELECT u_name, user_id FROM users WHERE u_name = '$author_n'");
 		  $num_r = pg_num_rows($result);
 		  $check_c = $_POST["c_id"];
 		  $check_g = $_POST["g_id"];
-		  if ($num_r <> 0 and pg_fetch_result($result, 0, 2) == 1 and $check_c <> 0 and $check_g <> 0) {
+		  if ($num_r <> 0 and $check_c <> 0 and $check_g <> 0) {
 			  $author_id = pg_fetch_result($result, 0, 1);
 			  $tmp = array(
 			  'pic_name' => $_POST["p_name"],
@@ -446,12 +446,11 @@ a {
 			  'category_id' => $_POST["c_id"],
 			  'genre_id' => $_POST["g_id"],
 			  'year_taken' => $_POST["year_t"]);
-			  $db_connection = pg_connect("host=localhost dbname=test user=postgres password=yo_password");
 			  pg_insert($db_connection, 'pictures', $tmp);
 			  echo "<button onclick=document.getElementById('id01').style.display='block' style=width:auto;>Log in</button>
 			  <button  onclick=window.location.href='register.php' style=width:auto;>Register</button>
 			  <script>alert('Image successfully uploaded.')</script>";
-		  }
+		    }
 		  else {
 			  echo "<button onclick=document.getElementById('id01').style.display='block' style=width:auto;>Log in</button>
 			  <button  onclick=window.location.href='register.php' style=width:auto;>Register</button>
@@ -459,32 +458,31 @@ a {
 		    }
     }
 	else {
-		if (isset($_POST["email"])) {
+		if (isset($_POST["login"]) and isset($_POST["psw"])) {
 			if (isset($_POST["name"])) {
 				$us_name = $_POST["name"];
 				$tmp = array(
 				'u_name' => $_POST["name"],
-				'u_email' => $_POST["email"],
+				'u_email' => $_POST["login"],
 				'u_password' => $_POST["psw"],
 				'author' => $_POST["author"]
 				);
-				$db_connection = pg_connect("host=localhost dbname=test user=postgres password=yo_password");
 				pg_insert($db_connection, 'users', $tmp);
 				echo "<a>$us_name</a>";
 			}
 			else {
-				$user_email = $_POST["email"];
+				$user_email = $_POST["login"];
 				$user_password = $_POST["psw"];
-				$db_connection = pg_connect("host=localhost dbname=test user=postgres password=yo_password");
-				$result = pg_query($db_connection, "SELECT u_email, u_password, u_name, author FROM users WHERE u_email='$user_email' AND u_password = '$user_password'");
+				$result = pg_query($db_connection, "SELECT * FROM users WHERE u_email='$user_email' AND u_password = '$user_password'");
 				$num_r = pg_num_rows($result);
 				if ($num_r <> 0) {
-					$user_email_r = pg_fetch_result($result, 0, 0);
-					$user_password_r = pg_fetch_result($result, 0, 1);
-					$u_n = pg_fetch_result($result, 0, 2);
-					$aur = pg_fetch_result($result, 0, 3);
-					echo "<a>$u_n</a>";
-				}
+					$user_id_r = pg_fetch_result($result, 0, 0);
+					$user_email_r = pg_fetch_result($result, 0, 2);
+					$user_password_r = pg_fetch_result($result, 0, 3);
+					$u_n = pg_fetch_result($result, 0, 1);
+					$aur = pg_fetch_result($result, 0, 4);
+						echo "<a>$u_n</a>";
+					}
 				else {
 					echo "<button onclick=document.getElementById('id01').style.display='block' style=width:auto;>Log in</button>
 					<button  onclick=window.location.href='register.php' style=width:auto;>Register</button>
@@ -494,20 +492,22 @@ a {
 		}
 		else { echo "<button onclick=document.getElementById('id01').style.display='block' style=width:auto;>Log in</button>
 		<button  onclick=window.location.href='register.php' style=width:auto;>Register</button>";
-		}
+	}
 	}
 	?>
   </div>
 </div>
 </div>
-  <form action="upload.php" method="post">
+  <form action="search_r.php" method="post">
   <div class="container">
-  <h3>Upload image</h3>
-  <p>Please fill in this form to upload your image.</p><hr>
+  <h3>Search for image(s)</h3>
+  <hr>
   <label for="p_name"><b>Name</b></label>
   <input type="text" placeholder="Enter Name" name="p_name" id="p_name">
+  <hr>
   <label for="a_id"><b>Author name</b></label>
   <input type="text" placeholder="Enter Author" name="a_id" id="a_id">
+  <hr>
   <table>
   <td>
   <label for="c_id"><b>Category: </b></label>
@@ -546,38 +546,27 @@ a {
   <hr>
   <label for="year_t"><b>Year Taken</b></label>
   <input type="text" placeholder="Enter Year" name="year_t" id="year_t">
-  <script>
-  var a = <?php echo $aur; ?>;
-  if (a == 1) {
-	  document.write('<button type="submit" class="registerbtn">Upload</button>');
-    }
-	else {
-	alert('Sorry! It looks like you don\'t have rights to to upload images.');
-	}
-  </script>
-  </div>
-  <div class="container signin">
-  <p>Don't have an account? <a href="register.php">Register Now</a>.</p>
+  <button type="submit" class="registerbtn">Search</button>
   </div>
   </form>
 
 <div id="id01" class="modal">
   
-  <form class="modal-content animate" action="upload.php" method="post">
+  <form class="modal-content animate" action="search.php" method="post">
     <div class="imgcontainer">
       <span onclick="document.getElementById('id01').style.display='none'" class="close" title="Close Modal">&times;</span>
     </div>
 
     <div class="container">
-      <label for="uemail"><b>Email</b></label>
-      <input type="text" placeholder="Enter Email" name="email" required>
+      <label for="login"><b>Email</b></label>
+      <input type="text" placeholder="Enter Email" name="login" required>
 
       <label for="psw"><b>Password</b></label>
       <input type="password" placeholder="Enter Password" name="psw" required>
         
       <button type="submit">Log in</button>
       <label>
-        <input type="checkbox" checked="checked" name="remember"> Remember me
+        <input type="checkbox" checked="checked" name="rememberme"> Remember me
       </label>
     </div>
   </form>
