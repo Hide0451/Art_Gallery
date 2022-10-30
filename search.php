@@ -546,7 +546,21 @@ a {
   <hr>
   <label for="year_t"><b>Year Taken</b></label>
   <input type="text" placeholder="Enter Year" name="year_t" id="year_t">
-  <button type="submit" class="registerbtn">Search</button>
+  <?php if(isset($_POST["login"])) {
+	  $user_email = $_POST["login"];
+				$user_password = $_POST["psw"];
+				$result = pg_query($db_connection, "SELECT * FROM users WHERE u_email='$user_email' AND u_password = '$user_password'");
+				$num_r = pg_num_rows($result);
+				if ($num_r <> 0) {
+					$user_id_r = pg_fetch_result($result, 0, 0);
+					$user_email_r = pg_fetch_result($result, 0, 2);
+					$user_password_r = pg_fetch_result($result, 0, 3);
+					$u_n = pg_fetch_result($result, 0, 1);
+					$aur = pg_fetch_result($result, 0, 4);
+					echo "<button type='submit' class='registerbtn'>Search</button>";	
+					} 
+  }
+  ?>
   </div>
   </form>
 
