@@ -1,8 +1,8 @@
 CREATE TABLE users(
 user_id SERIAL PRIMARY KEY,
 u_name VARCHAR(30),
-u_email VARCHAR(30),
-u_password VARCHAR(30),
+u_email VARCHAR(75),
+u_password VARCHAR(75),
 author VARCHAR(1));
 
 CREATE TABLE category(
@@ -44,3 +44,8 @@ VALUES('Sunset Tree', 1, 1, 2, 2017), ('Eiffel Tower', 2, 1, 6, 2019), ('Struggl
 ('Alcohol Ink', 2, 2, 7, 2021), ('Fall Tree', 3, 2, 2, 2017), ('The Death of Socrates', 2, 2, 5, 1787),
 ('Wet Dog', 4, 3, 3, 2020), ('Sharecropper', 3, 3, 5, 1952), ('Spide-rman', 1, 3, 4, 2019),
 ('Spring', 2, 3, 2, 2017), ('Vishnu pandit', 4, 3, 2, 2015), ('River and Forest', 4, 3, 2, 2020);
+SELECT * FROM users;
+
+
+
+
