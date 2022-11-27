@@ -89,16 +89,28 @@ if (isset($_COOKIE["author"]) == 1 and isset($_POST["upload"])) {
 		  WHERE u_name = '$u_name' AND pic_name = '$pic_name'");
 		  $num_r = pg_num_rows($result);
 		  if ($num_r == 0 and $_POST["c_id"] <> 0 and $_POST["g_id"] <> 0 and $_POST["year_t"] > 0) {
-			  
-			  $tmp = array(
-			  'pic_name' => $_POST["p_name"],
-			  'author_id' => $_COOKIE["u_id"],
-			  'category_id' => $_POST["c_id"],
-			  'genre_id' => $_POST["g_id"],
-			  'year_taken' => $_POST["year_t"]);
-			  $db_connection = pg_connect("host=localhost dbname=test user=postgres password=yo_password");
-			  pg_insert($db_connection, 'pictures', $tmp);
-			  echo "<script>alert('Image successfully uploaded.')</script>";
+			  $info = pathinfo($_FILES['f_to_u']['name']);
+			  $ext = $info['extension']; // get the extension of the file
+			  if ($ext == 'jpg') {
+				  $result_1 = pg_query($db_connection, "SELECT COUNT(*) FROM pictures");
+				  $coun = pg_fetch_result($result_1, 0, 0);
+				  $coun++;
+				  $newname = "$coun.".$ext; 
+				  $target = 'images/'.$newname;
+				  move_uploaded_file( $_FILES['f_to_u']['tmp_name'], $target);
+				  $tmp = array(
+				  'pic_name' => $_POST["p_name"],
+				  'author_id' => $_COOKIE["u_id"],
+				  'category_id' => $_POST["c_id"],
+				  'genre_id' => $_POST["g_id"],
+				  'year_taken' => $_POST["year_t"]);
+				  $db_connection = pg_connect("host=localhost dbname=test user=postgres password=yo_password");
+				  pg_insert($db_connection, 'pictures', $tmp);
+				  echo "<script>alert('Image successfully uploaded.')</script>";
+			  }
+			  else {
+				  echo "<script>alert('Sorry, only JPG files are allowed.')</script>";
+		      }
 		  }
 		  else {
 			  echo "<script>alert('Wrong cridentials')</script>";

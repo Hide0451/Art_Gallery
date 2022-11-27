@@ -89,26 +89,34 @@ else {
 <link rel="stylesheet" href="g_styles.css">
 </head>
 <body>
-<a style="text-decoration:none" href="index.php" ><h2 class="example" align="center">Art Gallery</h2></a>
+<a style="text-decoration:none" href="index.php" ><h2 class="example" align="center"><span lang="en">Art Gallery</span><span lang="ru">Галерея творчества</span></h2></a>
 <div id="navbar">
-  <a class="active" href="index.php">Home</a>
-  <a href="paintings.php">Paintings</a>
-  <a href="photos.php">Photos</a>
-  <a href="drawings.php">Drawings</a>
-  <a href="upload.php">Upload</a>
-  <a href="search.php">Search</a>
+  <a class="active" href="index.php"><span lang="en">Home</span><span lang="ru">Главная</span></a>
+  <a href="paintings.php"><span lang="en">Paintings</span><span lang="ru">Картины</span></a>
+  <a href="photos.php"><span lang="en">Photos</span><span lang="ru">Фотографии</span></a>
+  <a href="drawings.php"><span lang="en">Drawings</span><span lang="ru">Рисунки</span></a>
+  <a href="upload.php"><span lang="en">Upload</span><span lang="ru">Загрузка</span></a>
+  <a href="search.php"><span lang="en">Search</span><span lang="ru">Поиск</span></a>
+  <form>
+    <a>
+    <select id="lang-switch">
+        <option value="en" selected>English</option>
+        <option value="ru">Русский</option>
+    </select>
+	</a>
+</form>
   <div class="navbar">
   <div class="log_in_and_reg">
   <?php
   if ($_COOKIE["login"] == 0) {
-	  echo "<table><td><button onclick=document.getElementById('id01').style.display='block' style=width:auto;>Log in</button></td>
-	  <td><button  onclick=window.location.href='register.html' style=width:auto;>Register</button></td>
-	  <td><button  onclick=window.location.href='settings.php'>Settings</button></td></table>";
+	  echo "<table><td><button onclick=document.getElementById('id01').style.display='block' style=width:auto;><span lang='en'>Log in</span><span lang='ru'>Войти</span></button></td>
+	  <td><button  onclick=window.location.href='register.html' style=width:auto;><span lang='en'>Register</span><span lang='ru'>Регистрация</span></button></td>
+	  <td><button  onclick=window.location.href='settings.php'><span lang='en'>Settings</span><span lang='ru'>Настройки</span></button></td></table>";
   }
   else {
 	  $u_na = $_COOKIE["uname"];
-	  echo "<table><td><a>$u_na</a></td><td><form action='index.php' method='post'><input type='hidden' id='u_status' name='u_status' value='0'><button type='submit'>Log out</button></form></td>
-	  <td><button  onclick=window.location.href='settings.php'>Settings</button></td></table>";
+	  echo "<table><td><a>$u_na</a></td><td><form action='settings.php' method='post'><input type='hidden' id='u_status' name='u_status' value='0'><button type='submit'><span lang='en'>Log out</span><span lang='ru'>Выйти</span></button></form></td>
+	  <td><button  onclick=window.location.href='settings.php'><span lang='en'>Settings</span><span lang='ru'>Настройки</span></button></td></table>";
   }
   ?>
   </div>
@@ -116,19 +124,19 @@ else {
 </div>
 <div id="id01" class="modal">
   
-  <form class="modal-content animate" action="index.php" method="post">
+  <form class="modal-content animate" action="settings.php" method="post">
     <div class="imgcontainer">
       <span onclick="document.getElementById('id01').style.display='none'" class="close" title="Close Modal">&times;</span>
     </div>
 
     <div class="container">
-      <label for="uemail"><b>Email</b></label>
+      <label for="uemail"><b><span lang="en">Email</span><span lang="ru">Адрес электронной почты</span></b></label>
       <input type="text" placeholder="Enter Email" name="email" required>
 
-      <label for="psw"><b>Password</b></label>
+      <label for="psw"><b><span lang="en">Password</span><span lang="ru">Пароль</span></b></label>
       <input type="password" placeholder="Enter Password" name="psw" required>
       <input type="hidden" id="u_status" name="u_status" value="2">
-      <button type="submit">Log in</button>
+      <button type="submit"><span lang="en">Log in</span><span lang="ru">Войти</span></button>
     </div>
   </form>
 </div>
@@ -147,85 +155,24 @@ function myFunction() {
   }
 }
 </script>
-<table width="95%" align="center">
-<td align="left" width="70%">
-<div class="slideshow-container">
-<div class="mySlides fade">
-<img src="images/1.jpg" height="300px" width="100%" border="1px" alt="">
-</div>
 
-<div class="mySlides fade">
-  <img src="images/2.jpg" height="300px" width="100%" border="1px" alt="">
-</div>
+<form action="index.php" method="post">
+  <div class="container">
+    <h1><span lang="en">Settings:</span><span lang="ru">Настройки:</span></h1>
+	<?php if($_COOKIE["login"] <> 0 and isset($_COOKIE["author"])) {
+	  if ($_COOKIE["author"] == 0) {
+		  echo "<hr><label for='cbox'><b><span lang='en'>Author?</span><span lang='ru'>Автор?</span></b></label>
+		  <input type='hidden' name='author' value='0' />
+		  <input type='checkbox' placeholder='author' name='author' id='author' value='1'><hr>
+		  <input type='hidden' id='u_status' name='u_status' value='3'>";
+	  }	
+    }
+  ?>
 
-<div class="mySlides fade">
-  <img src="images/3.jpg" height="300px" width="100%" border="1px" alt="">
-</div>
-<!--
-<a class="prev" onclick="plusSlides(-1)">❮</a>
-<a class="next" onclick="plusSlides(1)">❯</a>-->
-<br>
-<div style="text-align:center">
-  <span class="dot" onclick="currentSlide(1)"></span> 
-  <span class="dot" onclick="currentSlide(2)"></span> 
-  <span class="dot" onclick="currentSlide(3)"></span> 
-</div>
-</div>
-</td>
-<td><p class="ncol">Welcome to Art Gallery!
-A place where you can find a lot of artwork from famous artists!</p></td>
-</table>
-<script>
-let slideIndex = 0;
-showSlides();
+    <button type="submit" class="registerbtn"><span lang="en">Save changes</span><span lang="ru">Сохранить изменения</span></button>
+  </div>
+</form>
 
-function showSlides() {
-  let i;
-  let slides = document.getElementsByClassName("mySlides");
-  let dots = document.getElementsByClassName("dot");
-  for (i = 0; i < slides.length; i++) {
-    slides[i].style.display = "none";  
-  }
-  slideIndex++;
-  if (slideIndex > slides.length) {slideIndex = 1}    
-  for (i = 0; i < dots.length; i++) {
-    dots[i].className = dots[i].className.replace(" active", "");
-  }
-  slides[slideIndex-1].style.display = "block";  
-  dots[slideIndex-1].className += " active";
-  setTimeout(showSlides, 5000); // Change image every 5 seconds
-}
-</script>
-
-<div class="grid-container">
-<?php
-$db_connection = pg_connect("host=localhost dbname=test user=postgres password=yo_password");
-$result = pg_query($db_connection, "SELECT pic_name, pic_id FROM pictures");
-$result_1 = pg_query($db_connection, "SELECT COUNT(*) FROM pictures");
-$result_2 = pg_query($db_connection, "SELECT u_name FROM users INNER JOIN pictures ON users.user_id = pictures.author_id");
-$a = 0;
-$coun = pg_fetch_result($result_1, $a, 0);
-while($a < $coun) {
-$val[$a] = pg_fetch_result($result, $a, 0);
-$names[$a] = pg_fetch_result($result_2, $a, 0);
-$im[$a] = pg_fetch_result($result, $a, 1);
-$a++;
-}
-$a = 0;
-?>
-<script>
-var i=0;
-var arr = <?php echo json_encode($val); ?>;
-var k = <?php echo json_encode($im); ?>;
-var coun = <?php echo $coun; ?>;
-var a_name = <?php echo json_encode($names); ?>;
-while (i<coun) {
-  
-  document.write('<div class="grid-item" id="' + k[i] + '"><form action="pic_view.php" method="post"><input type="hidden" id="sel_pic_id" name="sel_pic_id" value="' + k[i] + '"><button type="submit" class="expand" id="' + k[i] + '"><img src="images/' + k[i] + '.jpg" height="190px" width="90%" border="1px" alt="" /><div class="overlay"><p class="ncol">' + arr[i] + ' ' + 'by ' + a_name[i] + '</p></div></button></form></div>');
-  i++;
-}
-</script>
-</div>
 <script>
 // Get the modal
 var modal = document.getElementById('id01');
@@ -237,5 +184,28 @@ window.onclick = function(event) {
     }
 }
 </script>
+
+<script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+<script>
+$('[lang]').hide(); // hide all lang attributes on start.
+$('[lang="en"]').show(); // show just English text 
+$('#lang-switch').change(function () { // put onchange event when user select option from select
+    var lang = $(this).val(); // decide which language to display using switch case
+    switch (lang) {
+        case 'en':
+            $('[lang]').hide();
+            $('[lang="en"]').show();
+        break;
+        case 'ru':
+            $('[lang]').hide();
+            $('[lang="ru"]').show();
+        break;
+        default:
+            $('[lang]').hide();
+            $('[lang="en"]').show();
+        }
+});
+</script>
+
 </body>
 </html>

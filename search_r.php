@@ -151,7 +151,7 @@ function myFunction() {
 <div class="grid-container">
 <?php
   $db_connection = pg_connect("host=localhost dbname=test user=postgres password=yo_password");
-  if ($_POST["p_name"] <> 0 or $_POST["a_id"] <> 0 or $_POST["c_id"] <> 0 or $_POST["g_id"] <> 0 or $_POST["year_t"] <> 0) {
+  if ($_POST["p_name"] <> 0 or $_POST["a_id"] <> 0 or $_POST["c_id"] <> 0 or $_POST["g_id"] <> 0 or $_POST["year_t1"] <> 0 or $_POST["year_t2"] <> 0) {
 	      if ($_POST["p_name"] <> 0) {
 			  $pic_n = $_POST["p_name"];
 		  }
@@ -181,23 +181,29 @@ function myFunction() {
 		  else {
 			  $pic_g = 'genre_id';
 		  }
-		  if ($_POST["year_t"] <> 0 and $_POST["year_t"] <> "") {
-			  $pic_y = $_POST["year_t"];
+		  if ($_POST["year_t1"] <> 0 and $_POST["year_t1"] <> "") {
+			  $pic_y1 = $_POST["year_t1"];
 		  }
 		  else {
-			  $pic_y = 'year_taken';
+			  $pic_y1 = 'year_taken';
+		  }
+		  if ($_POST["year_t2"] <> 0 and $_POST["year_t2"] <> "") {
+			  $pic_y2 = $_POST["year_t2"];
+		  }
+		  else {
+			  $pic_y2 = 'year_taken';
 		  }
 		  $sort_by = $_POST["sort_by"];
 		  $result = pg_query($db_connection, "SELECT pic_id, pic_name, u_name FROM pictures 
 		  INNER JOIN users ON pictures.author_id = users.user_id WHERE pic_name LIKE '%$pic_n%' AND
-		  author_id = $pic_a AND category_id = $pic_c AND genre_id = $pic_g AND year_taken = $pic_y
+		  author_id = $pic_a AND category_id = $pic_c AND genre_id = $pic_g AND year_taken BETWEEN $pic_y1 AND $pic_y2
 		  ORDER BY $sort_by;");
 		  $num_r = pg_num_rows($result);
 		  $a = 0;
 		  if ($num_r <> 0) {
 			  $result_1 = pg_query($db_connection, "SELECT COUNT(*) FROM pictures 
 		      INNER JOIN users ON pictures.author_id = users.user_id WHERE pic_name LIKE '%$pic_n%' AND
-		      author_id = $pic_a AND category_id = $pic_c AND genre_id = $pic_g AND year_taken = $pic_y;");
+		      author_id = $pic_a AND category_id = $pic_c AND genre_id = $pic_g AND year_taken BETWEEN $pic_y1 AND $pic_y2;");
 		      $coun = pg_fetch_result($result_1, $a, 0);
 			  while($a < $coun) {
 				  $val[$a] = pg_fetch_result($result, $a, 1);

@@ -160,8 +160,9 @@ else {
   </td>
   </table>
   <hr>
-  <label for="year_t"><b>Year Taken</b></label>
-  <input type="text" placeholder="Enter Year" name="year_t" id="year_t">
+  <label for="year_t"><b>Year:</b></label>
+  <p class="ncol">from<input type="text" placeholder="Enter Year" name="year_t1" id="year_t1">to
+  <input type="text" placeholder="Enter Year" name="year_t2" id="year_t2"></p>
   <hr>
   <table>
   <td>
