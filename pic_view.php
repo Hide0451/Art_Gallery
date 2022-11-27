@@ -1,5 +1,6 @@
 <?php
 $db_connection = pg_connect("host=localhost dbname=test user=postgres password=yo_password");
+setcookie('pic_tmp_id', 0, time()+60*30);
 if (isset($_POST["u_status"])) {
 	//log out
 	if ($_POST["u_status"] == 0) {
@@ -91,8 +92,8 @@ else {
 <body>
 <a style="text-decoration:none" href="index.php" ><h2 class="example" align="center">Art Gallery</h2></a>
 <div id="navbar">
-  <a href="index.php">Home</a>
-  <a class="active" href="paintings.php">Paintings</a>
+  <a class="active" href="index.php">Home</a>
+  <a href="paintings.php">Paintings</a>
   <a href="photos.php">Photos</a>
   <a href="drawings.php">Drawings</a>
   <a href="upload.php">Upload</a>
@@ -107,17 +108,16 @@ else {
   }
   else {
 	  $u_na = $_COOKIE["uname"];
-	  echo "<table><td><a>$u_na</a></td><td><form action='paintings.php' method='post'><input type='hidden' id='u_status' name='u_status' value='0'><button type='submit'>Log out</button></form></td>
+	  echo "<table><td><a>$u_na</a></td><td><form action='index.php' method='post'><input type='hidden' id='u_status' name='u_status' value='0'><button type='submit'>Log out</button></form></td>
 	  <td><button  onclick=window.location.href='settings.php'>Settings</button></td></table>";
   }
   ?>
   </div>
 </div>
 </div>
-
 <div id="id01" class="modal">
   
-  <form class="modal-content animate" action="paintings.php" method="post">
+  <form class="modal-content animate" action="index.php" method="post">
     <div class="imgcontainer">
       <span onclick="document.getElementById('id01').style.display='none'" class="close" title="Close Modal">&times;</span>
     </div>
@@ -134,6 +134,7 @@ else {
   </form>
 </div>
 
+
 <script>
 window.onscroll = function() {myFunction()};
 
@@ -148,35 +149,27 @@ function myFunction() {
   }
 }
 </script>
+
 <div class="grid-container">
 <?php
+$sel_pic_id = $_POST["sel_pic_id"];
 $db_connection = pg_connect("host=localhost dbname=test user=postgres password=yo_password");
-$result = pg_query($db_connection, "SELECT pic_name, pic_id FROM pictures WHERE category_id = 2");
-$result_1 = pg_query($db_connection, "SELECT COUNT(*) FROM pictures WHERE category_id = 2");
-$result_2 = pg_query($db_connection, "SELECT u_name FROM users INNER JOIN pictures ON users.user_id = pictures.author_id WHERE category_id = 2");
-$a = 0;
-$coun = pg_fetch_result($result_1, $a, 0);
-$start_num = pg_fetch_result($result, $a, 1);
-while($a < $coun) {
-$val[$a] = pg_fetch_result($result, $a, 0);
-$names[$a] = pg_fetch_result($result_2, $a, 0);
-$im[$a] = pg_fetch_result($result, $a, 1);
-$a++;
-}
-$a = 0;
+$result = pg_query($db_connection, "SELECT pic_name, u_name, category_name, genre_name, year_taken, date_posted FROM pictures
+INNER JOIN genre ON pictures.genre_id = genre.genre_id INNER JOIN category ON pictures.category_id = category.category_id
+INNER JOIN users ON pictures.author_id = users.user_id WHERE pic_id = $sel_pic_id");
+$pic_name = pg_fetch_result($result, 0, 0);
+$u_name = pg_fetch_result($result, 0, 1);
+$category = pg_fetch_result($result, 0, 2);
+$genre = pg_fetch_result($result, 0, 3);
+$year_t = pg_fetch_result($result, 0, 4);
+$date_posted = pg_fetch_result($result, 0, 5);
+echo "<table><tr><td><img src='images/$sel_pic_id.jpg' height='350px' width='100%' border='1px' alt='' /></td></tr><tr><td><p class='ncol' align='center'>$pic_name</p></td></tr></table>";
+echo "<table> <tr><td><p class='ncol'>Author: $u_name</p></td></tr><hr>";
+echo "<tr><td><p class='ncol'>Category: $category</p></td></tr>";
+echo "<tr><td><p class='ncol'>Genre: $genre</p></td></tr>";
+echo "<tr><td><p class='ncol'>Year: $year_t</p></td></tr>";
+echo "<tr><td><p class='ncol'>Date posted: $date_posted</p></td></tr></table>";
 ?>
-<script>
-var i=0;
-var arr = <?php echo json_encode($val); ?>;
-var k = <?php echo json_encode($im); ?>;
-var coun = <?php echo $coun; ?>;
-var a_name = <?php echo json_encode($names); ?>;
-while (i<coun) {
-  
-  document.write('<div class="grid-item" id="' + k[i] + '"><form action="pic_view.php" method="post"><input type="hidden" id="sel_pic_id" name="sel_pic_id" value="' + k[i] + '"><button type="submit" class="expand" id="' + k[i] + '"><img src="images/' + k[i] + '.jpg" height="190px" width="90%" border="1px" alt="" /><div class="overlay"><p class="ncol">' + arr[i] + ' ' + 'by ' + a_name[i] + '</p></div></button></form></div>');
-  i++;
-}
-</script>
 </div>
 <script>
 // Get the modal

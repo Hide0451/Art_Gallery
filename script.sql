@@ -2,7 +2,7 @@ CREATE TABLE users(
 user_id SERIAL PRIMARY KEY,
 u_name VARCHAR(30),
 u_email VARCHAR(75),
-u_password VARCHAR(75),
+u_password VARCHAR(255),
 author VARCHAR(1));
 
 CREATE TABLE category(
@@ -20,6 +20,7 @@ author_id INT,
 category_id INT,
 genre_id INT,
 year_taken INT,
+date_posted TIMESTAMPTZ DEFAULT Now(),
 FOREIGN KEY (author_id) REFERENCES users (user_id) ON UPDATE CASCADE ON DELETE RESTRICT,
 FOREIGN KEY (category_id) REFERENCES category (category_id) ON UPDATE CASCADE ON DELETE RESTRICT,
 FOREIGN KEY (genre_id) REFERENCES genre (genre_id) ON UPDATE CASCADE ON DELETE RESTRICT);
@@ -44,8 +45,5 @@ VALUES('Sunset Tree', 1, 1, 2, 2017), ('Eiffel Tower', 2, 1, 6, 2019), ('Struggl
 ('Alcohol Ink', 2, 2, 7, 2021), ('Fall Tree', 3, 2, 2, 2017), ('The Death of Socrates', 2, 2, 5, 1787),
 ('Wet Dog', 4, 3, 3, 2020), ('Sharecropper', 3, 3, 5, 1952), ('Spide-rman', 1, 3, 4, 2019),
 ('Spring', 2, 3, 2, 2017), ('Vishnu pandit', 4, 3, 2, 2015), ('River and Forest', 4, 3, 2, 2020);
-SELECT * FROM users;
-
-
 
 

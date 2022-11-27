@@ -1,31 +1,84 @@
 <?php
-if (isset($_COOKIE["uname"])) {
+$db_connection = pg_connect("host=localhost dbname=test user=postgres password=yo_password");
+if (isset($_POST["u_status"])) {
+	//log out
+	if ($_POST["u_status"] == 0) {
+		setcookie('login', $_POST["u_status"], time()+60*30);
+		$_COOKIE["login"] = $_POST["u_status"];
+		if (isset($_COOKIE["uname"])) {
+			unset($_COOKIE["uname"]); 
+			setcookie("uname", null, time() - 3600, '/');
+		}
+		if (isset($_COOKIE["author"])) {
+			unset($_COOKIE["author"]); 
+			setcookie("author", null, time() - 3600, '/');
+		}
+		if (isset($_COOKIE["u_id"])) {
+			unset($_COOKIE["u_id"]); 
+			setcookie("u_id", null, time() - 3600, '/');
+		}
+	}
+	//registration
+	if ($_POST["u_status"] == 1) {
+		$user_email = $_POST["email"];
+		$result = pg_query($db_connection, "SELECT * FROM users WHERE u_email='$user_email'");
+		$num_r = pg_num_rows($result);
+		if ($num_r == 0) {
+			setcookie('login', $_POST["u_status"], time()+60*30);
+			$_COOKIE["login"] = $_POST["u_status"];
+			setcookie('uname', $_POST["name"], time()+60*30);
+			$_COOKIE["uname"] = $_POST["name"];
+			setcookie('author', $_POST["author"], time()+60*30);
+			$_COOKIE["author"] = $_POST["author"];
+			$tmp = array(
+			'u_name' => $_POST["name"],
+			'u_email' => $_POST["email"],
+			'u_password' => password_hash($_POST["psw"], PASSWORD_DEFAULT),
+			'author' => $_POST["author"]
+			);
+			$user_email = $_POST["email"];
+			pg_insert($db_connection, 'users', $tmp);
+			$result = pg_query($db_connection, "SELECT user_id FROM users WHERE u_email='$user_email'");
+			$user_id = pg_fetch_result($result, 0, 0);
+			setcookie('u_id', $user_id, time()+60*30);
+			$_COOKIE["u_id"] = $user_id;
+		}
+		else {
+			echo "<script>alert('Wrong Email')</script>";
+		}
+	}
+	//log in
+	if ($_POST["u_status"] == 2) {
+		$user_email = $_POST["email"];
+		$user_password = $_POST["psw"];
+		$result = pg_query($db_connection, "SELECT u_email, u_password, u_name, author, user_id FROM users WHERE u_email='$user_email'");
+		$num_r = pg_num_rows($result);
+		if ($num_r <> 0) {
+			$user_password_r = pg_fetch_result($result, 0, 1);
+			if(password_verify($user_password, $user_password_r)) {
+				setcookie('login', 1, time()+60*30);
+				$_COOKIE["login"] = 1;
+				$uname = pg_fetch_result($result, 0, 2);
+				setcookie('uname', $uname, time()+60*30);
+				$_COOKIE["uname"] = $uname;
+				$author = pg_fetch_result($result, 0, 3);
+				setcookie('author', $author, time()+60*30);
+				$_COOKIE["author"] = $author;
+				$user_id = pg_fetch_result($result, 0, 4);
+				setcookie('u_id', $user_id, time()+60*30);
+				$_COOKIE["u_id"] = $user_id;
+			}
+			else echo "<script>alert('Wrong Email or Password')</script>";
+		}
+		else echo "<script>alert('Wrong Email or Password')</script>";
+	}
 }
 else {
-	if (isset($_POST["name"])) {
-		$u_n = $_POST["name"];
-		$aur = $_POST["author"];
-		setcookie('uname', $u_n, time()+60*30);
-		setcookie('author', $aur, time()+60*30);
+	if (isset($_COOKIE["login"])) {
 	}
 	else {
-		if (isset($_POST["psw"])) {
-		  $user_email = $_POST["email"];
-		  $user_password = $_POST["psw"];
-		  $db_connection = pg_connect("host=localhost dbname=test user=postgres password=yo_password");
-		  $result = pg_query($db_connection, "SELECT u_email, u_password, u_name, author FROM users WHERE u_email='$user_email'");
-		  $num_r = pg_num_rows($result);
-		  if ($num_r <> 0) {
-			  $user_password_r = pg_fetch_result($result, 0, 1);
-			  if(password_verify($user_password, $user_password_r))
-			  {
-			  $u_n = pg_fetch_result($result, 0, 2);
-			  setcookie('uname', $u_n, time()+60*30);
-			  $aur = pg_fetch_result($result, 0, 3);
-			  setcookie('author', $aur, time()+60*30);
-			  }
-			}
-		}
+		setcookie('login', 0, time()+60*30);
+		$_COOKIE["login"] = 0;
 	}
 }
 ?>
@@ -42,86 +95,22 @@ else {
   <a href="paintings.php">Paintings</a>
   <a href="photos.php">Photos</a>
   <a href="drawings.php">Drawings</a>
-  <a href="about.php">About</a>
-  <a href="contact.php">Contact</a>
   <a href="upload.php">Upload</a>
   <a class="active" href="search.php">Search</a>
   <div class="navbar">
   <div class="log_in_and_reg">
   <?php
-  $db_connection = pg_connect("host=localhost dbname=test user=postgres password=yo_password");
-  if (isset($_POST["p_name"])) {
-	      $author_n = $_POST["a_id"];
-		  $result = pg_query($db_connection, "SELECT u_name, user_id FROM users WHERE u_name = '$author_n'");
-		  $num_r = pg_num_rows($result);
-		  $check_c = $_POST["c_id"];
-		  $check_g = $_POST["g_id"];
-		  if ($num_r <> 0 and $check_c <> 0 and $check_g <> 0) {
-			  $author_id = pg_fetch_result($result, 0, 1);
-			  $tmp = array(
-			  'pic_name' => $_POST["p_name"],
-			  'author_id' => $author_id,
-			  'category_id' => $_POST["c_id"],
-			  'genre_id' => $_POST["g_id"],
-			  'year_taken' => $_POST["year_t"]);
-			  pg_insert($db_connection, 'pictures', $tmp);
-			  echo "<button onclick=document.getElementById('id01').style.display='block' style=width:auto;>Log in</button>
-			  <button  onclick=window.location.href='register.html' style=width:auto;>Register</button>
-			  <script>alert('Image successfully uploaded.')</script>";
-		    }
-		  else {
-			  echo "<button onclick=document.getElementById('id01').style.display='block' style=width:auto;>Log in</button>
-			  <button  onclick=window.location.href='register.html' style=width:auto;>Register</button>
-			  <script>alert('The author with the name you entered does not exist or he does not have rights')</script>";
-		    }
-    }
-	else {
-	  if (isset($_POST["email"])) {
-	     if (isset($_POST["name"])) {
-		  $us_name = $_POST["name"];
-		  $tmp = array(
-		  'u_name' => $_POST["name"],
-		  'u_email' => $_POST["email"],
-		  'u_password' => password_hash($_POST["psw"], PASSWORD_DEFAULT),
-		  'author' => $_POST["author"]
-		  );
-		  $db_connection = pg_connect("host=localhost dbname=test user=postgres password=yo_password");
-		  pg_insert($db_connection, 'users', $tmp);
-		  echo "<a>$us_name</a><a href='search.php'>Log out</a>";
-		  setcookie('uname', $us_name, time()+60*30);
-		}
-	  else {
-		  $user_email = $_POST["email"];
-		  $user_password = $_POST["psw"];
-		  $db_connection = pg_connect("host=localhost dbname=test user=postgres password=yo_password");
-		  $result = pg_query($db_connection, "SELECT u_email, u_password, u_name FROM users WHERE u_email='$user_email'");
-		  $num_r = pg_num_rows($result);
-		  if ($num_r <> 0) {
-			  $user_password_r = pg_fetch_result($result, 0, 1);
-			  if(password_verify($user_password, $user_password_r))
-			  {
-			  $u_n = pg_fetch_result($result, 0, 2);
-			  setcookie('uname', $u_n, time()+60*30);
-			  echo "<a>$u_n</a><a href='search.php'>Log out</a>";
-			  }
-			}
-			else {
-				echo "<button onclick=document.getElementById('id01').style.display='block' style=width:auto;>Log in</button>
-				<button  onclick=window.location.href='register.html' style=width:auto;>Register</button>
-				<script>alert('Wrong Email or Password')</script>";
-			}
-		}
-	}
-		else {
-		if (isset($_COOKIE['uname'])) {
-			$u_na = $_COOKIE['uname'];
-		    echo "<a>$u_na</a><a href='search.php'>Log out</a>";
-		  }
-		  else echo "<button onclick=document.getElementById('id01').style.display='block' style=width:auto;>Log in</button>
-		  <button  onclick=window.location.href='register.html' style=width:auto;>Register</button>";
-		}
-	}
-	?>
+  if ($_COOKIE["login"] == 0) {
+	  echo "<table><td><button onclick=document.getElementById('id01').style.display='block' style=width:auto;>Log in</button></td>
+	  <td><button  onclick=window.location.href='register.html' style=width:auto;>Register</button></td>
+	  <td><button  onclick=window.location.href='settings.php'>Settings</button></td></table>";
+  }
+  else {
+	  $u_na = $_COOKIE["uname"];
+	  echo "<table><td><a>$u_na</a></td><td><form action='search.php' method='post'><input type='hidden' id='u_status' name='u_status' value='0'><button type='submit'>Log out</button></form></td>
+	  <td><button  onclick=window.location.href='settings.php'>Settings</button></td></table>";
+  }
+  ?>
   </div>
 </div>
 </div>
@@ -173,20 +162,28 @@ else {
   <hr>
   <label for="year_t"><b>Year Taken</b></label>
   <input type="text" placeholder="Enter Year" name="year_t" id="year_t">
-  <?php if(isset($_POST["email"]) or isset($_COOKIE["uname"])) {
-	  if(isset($_POST["email"])) {
-		  $user_email = $_POST["email"];
-		  $user_password = $_POST["psw"];
-		  $result = pg_query($db_connection, "SELECT * FROM users WHERE u_email='$user_email' AND u_password = '$user_password'");
-		  $num_r = pg_num_rows($result);
-		  if ($num_r <> 0) {
-			  $user_id_r = pg_fetch_result($result, 0, 0);
-			  $user_email_r = pg_fetch_result($result, 0, 2);
-			  $user_password_r = pg_fetch_result($result, 0, 3);
-			  $u_n = pg_fetch_result($result, 0, 1);
-			  $aur = pg_fetch_result($result, 0, 4);
-		    }
-	    }
+  <hr>
+  <table>
+  <td>
+  <label for="sort_by"><b>Sort by: </b></label>
+  </td>
+  <td>
+  <div class="custom-select" style="width:350px;">
+  <select id="sort_by" name="sort_by">
+    <option value="pic_name ASC">name ascending</option>
+    <option value="pic_name DESC">name descending</option>
+    <option value="u_name ASC">author ascending</option>
+	<option value="u_name DESC">author descending</option>
+    <option value="year_taken ASC">year ascending</option>
+    <option value="year_taken DESC">year descending</option>
+	<option value="date_posted ASC">date posted ascending</option>
+	<option value="date_posted DESC">date posted descending</option>
+  </select>
+  </div>
+  </td>
+  </table>
+  <hr>
+  <?php if($_COOKIE["login"] <> 0) {
 		echo "<button type='submit' class='registerbtn'>Search</button>";	 
     }
   ?>
@@ -206,26 +203,11 @@ else {
 
       <label for="psw"><b>Password</b></label>
       <input type="password" placeholder="Enter Password" name="psw" required>
-        
+      <input type="hidden" id="u_status" name="u_status" value="2">
       <button type="submit">Log in</button>
-      <label>
-        <input type="checkbox" checked="checked" name="rememberme"> Remember me
-      </label>
     </div>
   </form>
 </div>
-
-<script>
-// Get the modal
-var modal = document.getElementById('id01');
-
-// When the user clicks anywhere outside of the modal, close it
-window.onclick = function(event) {
-    if (event.target == modal) {
-        modal.style.display = "none";
-    }
-}
-</script>
 
 <script>
 window.onscroll = function() {myFunction()};
@@ -322,6 +304,16 @@ function closeAllSelect(elmnt) {
 then close all select boxes:*/
 document.addEventListener("click", closeAllSelect);
 </script>
+<script>
+// Get the modal
+var modal = document.getElementById('id01');
 
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+</script>
 </body>
 </html>
