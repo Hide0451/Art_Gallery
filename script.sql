@@ -46,4 +46,8 @@ VALUES('Sunset Tree', 1, 1, 2, 2017), ('Eiffel Tower', 2, 1, 6, 2019), ('Struggl
 ('Wet Dog', 4, 3, 3, 2020), ('Sharecropper', 3, 3, 5, 1952), ('Spide-rman', 1, 3, 4, 2019),
 ('Spring', 2, 3, 2, 2017), ('Vishnu pandit', 4, 3, 2, 2015), ('River and Forest', 4, 3, 2, 2020);
 
-
+CREATE TABLE administrators(
+adm_id SERIAL PRIMARY KEY,
+adm_name VARCHAR(30),
+adm_email VARCHAR(75),
+adm_password VARCHAR(255));

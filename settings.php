@@ -164,7 +164,7 @@ function myFunction() {
 		  echo "<hr><label for='cbox'><b><span lang='en'>Author?</span><span lang='ru'>Автор?</span></b></label>
 		  <input type='hidden' name='author' value='0' />
 		  <input type='checkbox' placeholder='author' name='author' id='author' value='1'><hr>
-		  <input type='hidden' id='u_status' name='u_status' value='3'>";
+		  <input type='hidden' id='up_author' name='up_author' value='1'>";
 	  }	
     }
   ?>

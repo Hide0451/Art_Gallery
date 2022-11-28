@@ -81,6 +81,15 @@ else {
 		$_COOKIE["login"] = 0;
 	}
 }
+if (isset($_POST["up_author"])) {
+	if ($_POST["author"] == 1) {
+		setcookie('author', 1, time()+60*30);
+		$_COOKIE["author"] = 1;
+		$d_to_u = array('author' => 1);
+        $cond = array('user_id' => $_COOKIE["u_id"]);
+		pg_update($db_connection, 'users', $d_to_u, $cond);
+	}
+}
 ?>
 <!DOCTYPE html>
 <html>
