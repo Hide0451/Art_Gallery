@@ -3,7 +3,9 @@ user_id SERIAL PRIMARY KEY,
 u_name VARCHAR(30),
 u_email VARCHAR(75),
 u_password VARCHAR(255),
-author VARCHAR(1));
+u_date date,
+author VARCHAR(1),
+date_created TIMESTAMP DEFAULT Now());
 
 CREATE TABLE category(
 category_id SERIAL PRIMARY KEY,
@@ -20,7 +22,7 @@ author_id INT,
 category_id INT,
 genre_id INT,
 year_taken INT,
-date_posted TIMESTAMPTZ DEFAULT Now(),
+date_posted TIMESTAMP DEFAULT Now(),
 FOREIGN KEY (author_id) REFERENCES users (user_id) ON UPDATE CASCADE ON DELETE RESTRICT,
 FOREIGN KEY (category_id) REFERENCES category (category_id) ON UPDATE CASCADE ON DELETE RESTRICT,
 FOREIGN KEY (genre_id) REFERENCES genre (genre_id) ON UPDATE CASCADE ON DELETE RESTRICT);
@@ -50,4 +52,7 @@ CREATE TABLE administrators(
 adm_id SERIAL PRIMARY KEY,
 adm_name VARCHAR(30),
 adm_email VARCHAR(75),
-adm_password VARCHAR(255));
+adm_password VARCHAR(255),
+adm_date date,
+date_created TIMESTAMP DEFAULT Now());
+
