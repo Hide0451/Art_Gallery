@@ -18,35 +18,6 @@ if (isset($_POST["u_status"])) {
 			setcookie("u_id", null, time() - 3600, '/');
 		}
 	}
-	//registration
-	if ($_POST["u_status"] == 1) {
-		$user_email = $_POST["email"];
-		$result = pg_query($db_connection, "SELECT * FROM users WHERE u_email='$user_email'");
-		$num_r = pg_num_rows($result);
-		if ($num_r == 0) {
-			setcookie('login', $_POST["u_status"], time()+60*30);
-			$_COOKIE["login"] = $_POST["u_status"];
-			setcookie('uname', $_POST["name"], time()+60*30);
-			$_COOKIE["uname"] = $_POST["name"];
-			setcookie('author', $_POST["author"], time()+60*30);
-			$_COOKIE["author"] = $_POST["author"];
-			$tmp = array(
-			'u_name' => $_POST["name"],
-			'u_email' => $_POST["email"],
-			'u_password' => password_hash($_POST["psw"], PASSWORD_DEFAULT),
-			'author' => $_POST["author"]
-			);
-			$user_email = $_POST["email"];
-			pg_insert($db_connection, 'users', $tmp);
-			$result = pg_query($db_connection, "SELECT user_id FROM users WHERE u_email='$user_email'");
-			$user_id = pg_fetch_result($result, 0, 0);
-			setcookie('u_id', $user_id, time()+60*30);
-			$_COOKIE["u_id"] = $user_id;
-		}
-		else {
-			echo "<script>alert('Wrong Email')</script>";
-		}
-	}
 	//log in
 	if ($_POST["u_status"] == 2) {
 		$user_email = $_POST["email"];
@@ -150,72 +121,69 @@ function myFunction() {
 </script>
 <div class="grid-container">
 <?php
-  $db_connection = pg_connect("host=localhost dbname=test user=postgres password=yo_password");
-  if ($_POST["p_name"] <> 0 or $_POST["a_id"] <> 0 or $_POST["c_id"] <> 0 or $_POST["g_id"] <> 0 or $_POST["year_t1"] <> 0 or $_POST["year_t2"] <> 0) {
-	      if ($_POST["p_name"] <> 0) {
-			  $pic_n = $_POST["p_name"];
-		  }
-		  else {
-			  $pic_n = 'pic_name';
-		  }
-		  if ($_POST["a_id"] <> 0 and $_POST["a_id"] <> "") {
-			  $s_n = $_POST["a_id"];
-			  $result_ = pg_query("SELECT user_id FROM users WHERE u_name = '$s_n';");
-			  $num_r = pg_num_rows($result_);
-			  if ($num_r <> 0) {
-				  $pic_a = pg_fetch_result($result_, 0, 0);
-			  }
-		  }
-		  else {
-			  $pic_a = 'author_id';
-		  }
-		  if ($_POST["c_id"] <> 0 and $_POST["c_id"] <> "") {
-			  $pic_c = $_POST["c_id"];
-		  }
-		  else {
-			  $pic_c = 'category_id';
-		  }
-		  if ($_POST["g_id"] <> 0 and $_POST["g_id"] <> "") {
-			  $pic_g = $_POST["g_id"];
-		  }
-		  else {
-			  $pic_g = 'genre_id';
-		  }
-		  if ($_POST["year_t1"] <> 0 and $_POST["year_t1"] <> "") {
-			  $pic_y1 = $_POST["year_t1"];
-		  }
-		  else {
-			  $pic_y1 = 'year_taken';
-		  }
-		  if ($_POST["year_t2"] <> 0 and $_POST["year_t2"] <> "") {
-			  $pic_y2 = $_POST["year_t2"];
-		  }
-		  else {
-			  $pic_y2 = 'year_taken';
-		  }
-		  $sort_by = $_POST["sort_by"];
-		  $result = pg_query($db_connection, "SELECT pic_id, pic_name, u_name FROM pictures 
-		  INNER JOIN users ON pictures.author_id = users.user_id WHERE pic_name LIKE '%$pic_n%' AND
-		  author_id = $pic_a AND category_id = $pic_c AND genre_id = $pic_g AND year_taken BETWEEN $pic_y1 AND $pic_y2
-		  ORDER BY $sort_by;");
-		  $num_r = pg_num_rows($result);
-		  $a = 0;
-		  if ($num_r <> 0) {
-			  $result_1 = pg_query($db_connection, "SELECT COUNT(*) FROM pictures 
-		      INNER JOIN users ON pictures.author_id = users.user_id WHERE pic_name LIKE '%$pic_n%' AND
-		      author_id = $pic_a AND category_id = $pic_c AND genre_id = $pic_g AND year_taken BETWEEN $pic_y1 AND $pic_y2;");
-		      $coun = pg_fetch_result($result_1, $a, 0);
-			  while($a < $coun) {
-				  $val[$a] = pg_fetch_result($result, $a, 1);
-				  $names[$a] = pg_fetch_result($result, $a, 2);
-				  $im[$a] = pg_fetch_result($result, $a, 0);
-				  $a++;
-				}
-			}
-			else {
-				echo "<script>alert('No images were found that correspond to your request')</script>";
-			}
-  }
+$db_connection = pg_connect("host=localhost dbname=test user=postgres password=yo_password");
+if ($_POST["p_name"] <> " ") {
+	$pic_n = $_POST["p_name"];
+}
+else {
+	$pic_n = 'pic_name';
+}
+if ($_POST["a_id"] <> 0 and $_POST["a_id"] <> "") {
+	$s_n = $_POST["a_id"];
+	$result_ = pg_query("SELECT user_id FROM users WHERE u_name = '$s_n';");
+	$num_r = pg_num_rows($result_);
+	if ($num_r <> 0) {
+		$pic_a = pg_fetch_result($result_, 0, 0);
+	}
+}
+else {
+	$pic_a = 'author_id';
+}
+if ($_POST["c_id"] <> 0 and $_POST["c_id"] <> "") {
+	$pic_c = $_POST["c_id"];
+}
+else {
+	$pic_c = 'category_id';
+}
+if ($_POST["g_id"] <> 0 and $_POST["g_id"] <> "") {
+	$pic_g = $_POST["g_id"];
+}
+else {
+	$pic_g = 'genre_id';
+}
+if ($_POST["year_t1"] <> "") {
+	$pic_y1 = $_POST["year_t1"];
+}
+else {
+	$pic_y1 = 'year_taken';
+}
+if ($_POST["year_t2"] <> "") {
+	$pic_y2 = $_POST["year_t2"];
+}
+else {
+	$pic_y2 = 'year_taken';
+}
+$sort_by = $_POST["sort_by"];
+$result = pg_query($db_connection, "SELECT pic_id, pic_name, u_name FROM pictures 
+INNER JOIN users ON pictures.author_id = users.user_id WHERE pic_name LIKE '%$pic_n%' AND
+author_id = $pic_a AND category_id = $pic_c AND genre_id = $pic_g AND year_taken BETWEEN $pic_y1 AND $pic_y2 ORDER BY $sort_by;");
+$num_r = pg_num_rows($result);
+$a = 0;
+if ($num_r <> 0) {
+	$result_1 = pg_query($db_connection, "SELECT COUNT(*) FROM pictures 
+	INNER JOIN users ON pictures.author_id = users.user_id WHERE pic_name LIKE '%$pic_n%' AND
+	author_id = $pic_a AND category_id = $pic_c AND genre_id = $pic_g AND year_taken BETWEEN $pic_y1 AND $pic_y2;");
+	$coun = pg_fetch_result($result_1, $a, 0);
+	while($a < $coun) {
+		$val[$a] = pg_fetch_result($result, $a, 1);
+		$names[$a] = pg_fetch_result($result, $a, 2);
+		$im[$a] = pg_fetch_result($result, $a, 0);
+		$a++;
+	}
+}
+else {
+	echo "<script>alert('No images were found that correspond to your request')</script>";
+}
 $a = 0;
 ?>
 <script>

@@ -34,6 +34,7 @@ if (isset($_POST["u_status"])) {
 			'u_name' => $_POST["name"],
 			'u_email' => $_POST["email"],
 			'u_password' => password_hash($_POST["psw"], PASSWORD_DEFAULT),
+			'u_date' => $_POST["date"],
 			'author' => $_POST["author"]
 			);
 			$user_email = $_POST["email"];
