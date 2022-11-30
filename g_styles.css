@@ -127,6 +127,12 @@ img {vertical-align: middle;}
   background-color: #0f0f0f;
   
 }
+.grid-container1 {
+  display: grid;
+  grid-template-columns: auto;
+  background-color: #0f0f0f;
+  
+}
 .grid-item {
   background-color: rgba(40, 40, 40,.98);
   border: 1px solid rgba(0, 0, 0, 0.4);
@@ -223,7 +229,7 @@ span.psw {
 
 /* Modal Content/Box */
 .modal-content {
-  background-color: #000;
+  background-color: #333;
   margin: 5% auto 15% auto; /* 5% from the top, 15% from the bottom and centered */
   border: 1px solid #00b359;
   width: 40%; /* Could be more or less, depending on screen size */

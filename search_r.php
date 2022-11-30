@@ -22,11 +22,12 @@ if (isset($_POST["u_status"])) {
 	if ($_POST["u_status"] == 2) {
 		$user_email = $_POST["email"];
 		$user_password = $_POST["psw"];
-		$result = pg_query($db_connection, "SELECT u_email, u_password, u_name, author, user_id FROM users WHERE u_email='$user_email'");
+		$result = pg_query($db_connection, "SELECT u_email, u_password, u_name, author, user_id, u_status FROM users WHERE u_email='$user_email'");
 		$num_r = pg_num_rows($result);
 		if ($num_r <> 0) {
 			$user_password_r = pg_fetch_result($result, 0, 1);
-			if(password_verify($user_password, $user_password_r)) {
+			$user_status = pg_fetch_result($result, 0, 5);
+			if(password_verify($user_password, $user_password_r) and $user_status == 0) {
 				setcookie('login', 1, time()+60*30);
 				$_COOKIE["login"] = 1;
 				$uname = pg_fetch_result($result, 0, 2);
@@ -39,9 +40,15 @@ if (isset($_POST["u_status"])) {
 				setcookie('u_id', $user_id, time()+60*30);
 				$_COOKIE["u_id"] = $user_id;
 			}
-			else echo "<script>alert('Wrong Email or Password')</script>";
+			else {
+				echo "<script>alert('Wrong Email or Password')</script>";
+			    echo "<script>window.location = 'search.php'</script>";
+			}
 		}
-		else echo "<script>alert('Wrong Email or Password')</script>";
+		else {
+			echo "<script>alert('Wrong Email or Password')</script>";
+	 	    echo "<script>window.location = 'search.php'</script>";
+		}
 	}
 }
 else {
@@ -128,13 +135,8 @@ if ($_POST["p_name"] <> " ") {
 else {
 	$pic_n = 'pic_name';
 }
-if ($_POST["a_id"] <> 0 and $_POST["a_id"] <> "") {
-	$s_n = $_POST["a_id"];
-	$result_ = pg_query("SELECT user_id FROM users WHERE u_name = '$s_n';");
-	$num_r = pg_num_rows($result_);
-	if ($num_r <> 0) {
-		$pic_a = pg_fetch_result($result_, 0, 0);
-	}
+if ($_POST["a_name"] <> 0 and $_POST["a_name"] <> " ") {
+	$pic_a = $_POST["a_name"];
 }
 else {
 	$pic_a = 'author_id';
@@ -166,13 +168,13 @@ else {
 $sort_by = $_POST["sort_by"];
 $result = pg_query($db_connection, "SELECT pic_id, pic_name, u_name FROM pictures 
 INNER JOIN users ON pictures.author_id = users.user_id WHERE pic_name LIKE '%$pic_n%' AND
-author_id = $pic_a AND category_id = $pic_c AND genre_id = $pic_g AND year_taken BETWEEN $pic_y1 AND $pic_y2 ORDER BY $sort_by;");
+u_name LIKE '%$pic_a%' AND category_id = $pic_c AND genre_id = $pic_g AND year_taken BETWEEN $pic_y1 AND $pic_y2 ORDER BY $sort_by;");
 $num_r = pg_num_rows($result);
 $a = 0;
 if ($num_r <> 0) {
 	$result_1 = pg_query($db_connection, "SELECT COUNT(*) FROM pictures 
 	INNER JOIN users ON pictures.author_id = users.user_id WHERE pic_name LIKE '%$pic_n%' AND
-	author_id = $pic_a AND category_id = $pic_c AND genre_id = $pic_g AND year_taken BETWEEN $pic_y1 AND $pic_y2;");
+	u_name LIKE '%$pic_a%' AND category_id = $pic_c AND genre_id = $pic_g AND year_taken BETWEEN $pic_y1 AND $pic_y2;");
 	$coun = pg_fetch_result($result_1, $a, 0);
 	while($a < $coun) {
 		$val[$a] = pg_fetch_result($result, $a, 1);
@@ -183,6 +185,7 @@ if ($num_r <> 0) {
 }
 else {
 	echo "<script>alert('No images were found that correspond to your request')</script>";
+	echo "<script>window.location = 'search.php'</script>";
 }
 $a = 0;
 ?>

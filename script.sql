@@ -3,9 +3,10 @@ user_id SERIAL PRIMARY KEY,
 u_name VARCHAR(30),
 u_email VARCHAR(75),
 u_password VARCHAR(255),
-u_date date,
-author VARCHAR(1),
-date_created TIMESTAMP DEFAULT Now());
+u_date DATE,
+author INT,
+date_created TIMESTAMP DEFAULT Now(),
+u_status int DEFAULT 0);
 
 CREATE TABLE category(
 category_id SERIAL PRIMARY KEY,
@@ -53,6 +54,5 @@ adm_id SERIAL PRIMARY KEY,
 adm_name VARCHAR(30),
 adm_email VARCHAR(75),
 adm_password VARCHAR(255),
-adm_date date,
+adm_date DATE,
 date_created TIMESTAMP DEFAULT Now());
-
