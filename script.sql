@@ -5,7 +5,7 @@ u_email VARCHAR(75),
 u_password VARCHAR(255),
 u_date DATE,
 author INT,
-date_created TIMESTAMP DEFAULT Now(),
+date_created TIMESTAMP DEFAULT (date_trunc('second', now()::TIMESTAMP)),
 u_status int DEFAULT 0);
 
 CREATE TABLE category(
@@ -23,7 +23,7 @@ author_id INT,
 category_id INT,
 genre_id INT,
 year_taken INT,
-date_posted TIMESTAMP DEFAULT Now(),
+date_posted TIMESTAMP DEFAULT (date_trunc('second', now()::TIMESTAMP)),
 FOREIGN KEY (author_id) REFERENCES users (user_id) ON UPDATE CASCADE ON DELETE RESTRICT,
 FOREIGN KEY (category_id) REFERENCES category (category_id) ON UPDATE CASCADE ON DELETE RESTRICT,
 FOREIGN KEY (genre_id) REFERENCES genre (genre_id) ON UPDATE CASCADE ON DELETE RESTRICT);
@@ -52,7 +52,16 @@ VALUES('Sunset Tree', 1, 1, 2, 2017), ('Eiffel Tower', 2, 1, 6, 2019), ('Struggl
 CREATE TABLE administrators(
 adm_id SERIAL PRIMARY KEY,
 adm_name VARCHAR(30),
-adm_email VARCHAR(75),
-adm_password VARCHAR(255),
-adm_date DATE,
-date_created TIMESTAMP DEFAULT Now());
+adm_password VARCHAR(255));
+
+
+CREATE TABLE tmp_users(
+user_id SERIAL PRIMARY KEY,
+u_name VARCHAR(30),
+u_email VARCHAR(75),
+u_password VARCHAR(255),
+u_date DATE,
+author INT,
+act_code VARCHAR(255),
+act_exp TIMESTAMP DEFAULT (date_trunc('second', now()::TIMESTAMP) + interval '1 hour' * 6));
+

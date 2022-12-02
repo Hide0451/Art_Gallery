@@ -24,25 +24,33 @@ if (isset($_POST["u_status"])) {
 		$result = pg_query($db_connection, "SELECT * FROM users WHERE u_email='$user_email'");
 		$num_r = pg_num_rows($result);
 		if ($num_r == 0) {
-			setcookie('login', $_POST["u_status"], time()+60*30);
-			$_COOKIE["login"] = $_POST["u_status"];
-			setcookie('uname', $_POST["name"], time()+60*30);
-			$_COOKIE["uname"] = $_POST["name"];
-			setcookie('author', $_POST["author"], time()+60*30);
-			$_COOKIE["author"] = $_POST["author"];
+			$app_url = 'http://localhost/project_0';
+			$activation_code = password_hash(bin2hex(random_bytes(16)), PASSWORD_DEFAULT);
+			// create the activation link
+			$activation_link = $app_url . "/activate.php?email=$user_email&act_code=$activation_code";
 			$tmp = array(
 			'u_name' => $_POST["name"],
 			'u_email' => $_POST["email"],
 			'u_password' => password_hash($_POST["psw"], PASSWORD_DEFAULT),
 			'u_date' => $_POST["date"],
-			'author' => $_POST["author"]
+			'author' => $_POST["author"],
+			'act_code' => $activation_code
 			);
-			$user_email = $_POST["email"];
-			pg_insert($db_connection, 'users', $tmp);
-			$result = pg_query($db_connection, "SELECT user_id FROM users WHERE u_email='$user_email'");
-			$user_id = pg_fetch_result($result, 0, 0);
-			setcookie('u_id', $user_id, time()+60*30);
-			$_COOKIE["u_id"] = $user_id;
+			pg_insert($db_connection, 'tmp_users', $tmp);
+			$mymail = fopen("mymail.txt", "w") or die("Unable to open file!");
+			$txt = "Subject: Activate account \r\n";
+			fwrite($mymail, $txt);
+			$txt = 'Hi, Please go to the following url to activate your account: ' . $activation_link;
+			fwrite($mymail, $txt);
+			fclose($mymail);
+			echo "<script>alert('Please check your email in order to complete registration process!')</script>";
+			if (isset($_COOKIE["login"])) {
+				
+			}
+			else {
+				setcookie('login', 0, time()+60*30);
+				$_COOKIE["login"] = 0;
+			}
 		}
 		else {
 			echo "<script>alert('Wrong Email')</script>";
@@ -218,14 +226,21 @@ function showSlides() {
 <div class="grid-container">
 <?php
 $db_connection = pg_connect("host=localhost dbname=test user=postgres password=yo_password");
-$result = pg_query($db_connection, "SELECT pic_name, pic_id FROM pictures");
+if ($_COOKIE["login"] == 0) {
+	$result = pg_query($db_connection, "SELECT pic_name, pic_id, u_name FROM pictures INNER JOIN users ON pictures.author_id = users.user_id ORDER BY pic_id LIMIT 12");
+}
+else {
+	$result = pg_query($db_connection, "SELECT pic_name, pic_id, u_name FROM pictures INNER JOIN users ON pictures.author_id = users.user_id ORDER BY pic_id");
+}
 $result_1 = pg_query($db_connection, "SELECT COUNT(*) FROM pictures");
-$result_2 = pg_query($db_connection, "SELECT u_name FROM users INNER JOIN pictures ON users.user_id = pictures.author_id");
+$coun = pg_fetch_result($result_1, 0, 0);
+if ($coun > 12 and $_COOKIE["login"] == 0) {
+	$coun = 12;
+}
 $a = 0;
-$coun = pg_fetch_result($result_1, $a, 0);
 while($a < $coun) {
 $val[$a] = pg_fetch_result($result, $a, 0);
-$names[$a] = pg_fetch_result($result_2, $a, 0);
+$names[$a] = pg_fetch_result($result, $a, 2);
 $im[$a] = pg_fetch_result($result, $a, 1);
 $a++;
 }

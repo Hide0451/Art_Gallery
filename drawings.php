@@ -129,15 +129,21 @@ function myFunction() {
 <div class="grid-container">
 <?php
 $db_connection = pg_connect("host=localhost dbname=test user=postgres password=yo_password");
-$result = pg_query($db_connection, "SELECT pic_name, pic_id FROM pictures WHERE category_id = 3");
+if ($_COOKIE["login"] == 0) {
+	$result = pg_query($db_connection, "SELECT pic_name, pic_id, u_name FROM pictures INNER JOIN users ON pictures.author_id = users.user_id WHERE category_id = 3 ORDER BY pic_id LIMIT 12");
+}
+else {
+	$result = pg_query($db_connection, "SELECT pic_name, pic_id, u_name FROM pictures INNER JOIN users ON pictures.author_id = users.user_id WHERE category_id = 3 ORDER BY pic_id");
+}
 $result_1 = pg_query($db_connection, "SELECT COUNT(*) FROM pictures WHERE category_id = 3");
-$result_2 = pg_query($db_connection, "SELECT u_name FROM users INNER JOIN pictures ON users.user_id = pictures.author_id WHERE category_id = 3");
+$coun = pg_fetch_result($result_1, 0, 0);
+if ($coun > 12 and $_COOKIE["login"] == 0) {
+	$coun = 12;
+}
 $a = 0;
-$coun = pg_fetch_result($result_1, $a, 0);
-$start_num = pg_fetch_result($result, $a, 1);
 while($a < $coun) {
 $val[$a] = pg_fetch_result($result, $a, 0);
-$names[$a] = pg_fetch_result($result_2, $a, 0);
+$names[$a] = pg_fetch_result($result, $a, 2);
 $im[$a] = pg_fetch_result($result, $a, 1);
 $a++;
 }
