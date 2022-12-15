@@ -67,26 +67,33 @@ else {
 <link rel="stylesheet" href="g_styles.css">
 </head>
 <body>
-<a style="text-decoration:none" href="index.php" ><h2 class="example" align="center">Art Gallery</h2></a>
+<a style="text-decoration:none" href="index.php" ><h2 class="example" align="center"><span lang="en">Art Gallery</span><span lang="ru">Галерея Творчества</span></h2></a>
 <div id="navbar">
-  <a href="index.php">Home</a>
-  <a href="paintings.php">Paintings</a>
-  <a href="photos.php">Photos</a>
-  <a href="drawings.php">Drawings</a>
-  <a href="upload.php">Upload</a>
-  <a class="active" href="search.php">Search</a>
+  <a href="index.php"><span lang="en">Home</span><span lang="ru">Главная</span></a>
+  <a href="paintings.php"><span lang="en">Paintings</span><span lang="ru">Картины</span></a>
+  <a href="photos.php"><span lang="en">Photos</span><span lang="ru">Фотографии</span></a>
+  <a href="drawings.php"><span lang="en">Drawings</span><span lang="ru">Рисунки</span></a>
+  <a href="upload.php"><span lang="en">Upload</span><span lang="ru">Загрузка</span></a>
+  <a class="active" href="search.php"><span lang="en">Search</span><span lang="ru">Поиск</span></a>
+  <form>
+    <a>
+    <select id="lang-switch">
+        <option value="en" selected>English</option>
+        <option value="ru">Русский</option>
+    </select>
+	</a>
+</form>
   <div class="navbar">
   <div class="log_in_and_reg">
   <?php
   if ($_COOKIE["login"] == 0) {
-	  echo "<table><td><button onclick=document.getElementById('id01').style.display='block' style=width:auto;>Log in</button></td>
-	  <td><button  onclick=window.location.href='register.html' style=width:auto;>Register</button></td>
-	  <td><button  onclick=window.location.href='settings.php'>Settings</button></td></table>";
+	  echo "<table><td><button onclick=document.getElementById('id01').style.display='block' style=width:auto;><span lang='en'>Log in</span><span lang='ru'>Войти</span></button></td>
+	  <td><button  onclick=window.location.href='register.html' style=width:auto;><span lang='en'>Register</span><span lang='ru'>Регистрация</span></button></td></table>";
   }
   else {
 	  $u_na = $_COOKIE["uname"];
-	  echo "<table><td><a>$u_na</a></td><td><form action='search.php' method='post'><input type='hidden' id='u_status' name='u_status' value='0'><button type='submit'>Log out</button></form></td>
-	  <td><button  onclick=window.location.href='settings.php'>Settings</button></td></table>";
+	  echo "<table><td><a>$u_na</a></td><td><form action='search.php' method='post'><input type='hidden' id='u_status' name='u_status' value='0'><button type='submit'><span lang='en'>Log out</span><span lang='ru'>Выйти</span></button></form></td>
+	  <td><button  onclick=window.location.href='settings.php'><span lang='en'>Settings</span><span lang='ru'>Настройки</span></button></td></table>";
   }
   ?>
   </div>
@@ -94,17 +101,17 @@ else {
 </div>
   <form action="search_r.php" method="post">
   <div class="container">
-  <h3>Search for image(s)</h3>
+  <h3><span lang="en">Search for image(s)</span><span lang="ru">Искать изображения<span></h3>
   <hr>
-  <label for="p_name"><b>Name</b></label>
+  <label for="p_name"><b><span lang="en">Name</span><span lang="ru">Название</span></b></label>
   <input type="text" placeholder="Enter Name" name="p_name" id="p_name">
   <hr>
-  <label for="a_name"><b>Author name</b></label>
+  <label for="a_name"><b><span lang="en">Author name</span><span lang="ru">Имя автора</span></b></label>
   <input type="text" placeholder="Enter Author" name="a_name" id="a_name">
   <hr>
   <table>
   <td>
-  <label for="c_id"><b>Category: </b></label>
+  <label for="c_id"><b><span lang="en">Category: </span><span lang="ru">Категория: </span></b></label>
   </td>
   <td>
   <div class="custom-select" style="width:230px;">
@@ -120,7 +127,7 @@ else {
   <hr>
   <table>
   <td>
-  <label for="g_id"><b>Genre: </b></label>
+  <label for="g_id"><b><span lang="en">Genre: </span><span lang="ru">Жанр: </span></b></label>
   </td>
   <td>
   <div class="custom-select" style="width:200px;">
@@ -138,13 +145,13 @@ else {
   </td>
   </table>
   <hr>
-  <label for="year_t"><b>Year:</b></label>
-  <p class="ncol">from<input type="text" placeholder="Enter Year" name="year_t1" id="year_t1">to
+  <label for="year_t"><b><span lang="en">Year:</span><span lang="ru">Год:</span></b></label>
+  <p class="ncol"><span lang="en">from</span><span lang="ru">с</span><input type="text" placeholder="Enter Year" name="year_t1" id="year_t1"><span lang="en">to</span><span lang="ru">по</span>
   <input type="text" placeholder="Enter Year" name="year_t2" id="year_t2"></p>
   <hr>
   <table>
   <td>
-  <label for="sort_by"><b>Sort by: </b></label>
+  <label for="sort_by"><b><span lang="en">Sort by: </span><span lang="ru">Сортировать по: </span></b></label>
   </td>
   <td>
   <div class="custom-select" style="width:350px;">
@@ -163,7 +170,7 @@ else {
   </table>
   <hr>
   <?php if($_COOKIE["login"] <> 0) {
-		echo "<button type='submit' class='registerbtn'>Search</button>";	 
+		echo "<button type='submit' class='registerbtn'><span lang='en'>Search</span><span lang='ru'>Поиск</span></button>";	 
     }
   ?>
   </div>
@@ -177,13 +184,13 @@ else {
     </div>
 
     <div class="container">
-      <label for="email"><b>Email</b></label>
+      <label for="uemail"><b><span lang="en">Email</span><span lang="ru">Адрес электронной почты</span></b></label>
       <input type="text" placeholder="Enter Email" name="email" required>
 
-      <label for="psw"><b>Password</b></label>
+      <label for="psw"><b><span lang="en">Password</span><span lang="ru">Пароль</span></b></label>
       <input type="password" placeholder="Enter Password" name="psw" required>
       <input type="hidden" id="u_status" name="u_status" value="2">
-      <button type="submit">Log in</button>
+      <button type="submit"><span lang="en">Log in</span><span lang="ru">Войти</span></button>
     </div>
   </form>
 </div>
@@ -294,5 +301,28 @@ window.onclick = function(event) {
     }
 }
 </script>
+
+<script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+<script>
+$('[lang]').hide(); // hide all lang attributes on start.
+$('[lang="en"]').show(); // show just English text 
+$('#lang-switch').change(function () { // put onchange event when user select option from select
+    var lang = $(this).val(); // decide which language to display using switch case
+    switch (lang) {
+        case 'en':
+            $('[lang]').hide();
+            $('[lang="en"]').show();
+        break;
+        case 'ru':
+            $('[lang]').hide();
+            $('[lang="ru"]').show();
+        break;
+        default:
+            $('[lang]').hide();
+            $('[lang="en"]').show();
+        }
+});
+</script>
+
 </body>
 </html>

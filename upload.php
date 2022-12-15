@@ -103,26 +103,33 @@ if (isset($_COOKIE["author"]) == 1 and isset($_POST["upload"])) {
 <link rel="stylesheet" href="g_styles.css">
 </head>
 <body>
-<a style="text-decoration:none" href="index.php" ><h2 class="example" align="center">Art Gallery</h2></a>
+<a style="text-decoration:none" href="index.php" ><h2 class="example" align="center"><span lang="en">Art Gallery</span><span lang="ru">Галерея Творчества</span></h2></a>
 <div id="navbar">
-  <a href="index.php">Home</a>
-  <a href="paintings.php">Paintings</a>
-  <a href="photos.php">Photos</a>
-  <a href="drawings.php">Drawings</a>
-  <a class="active" href="upload.php">Upload</a>
-  <a href="search.php">Search</a>
+  <a href="index.php"><span lang="en">Home</span><span lang="ru">Главная</span></a>
+  <a href="paintings.php"><span lang="en">Paintings</span><span lang="ru">Картины</span></a>
+  <a href="photos.php"><span lang="en">Photos</span><span lang="ru">Фотографии</span></a>
+  <a href="drawings.php"><span lang="en">Drawings</span><span lang="ru">Рисунки</span></a>
+  <a class="active" href="upload.php"><span lang="en">Upload</span><span lang="ru">Загрузка</span></a>
+  <a href="search.php"><span lang="en">Search</span><span lang="ru">Поиск</span></a>
+  <form>
+    <a>
+    <select id="lang-switch">
+        <option value="en" selected>English</option>
+        <option value="ru">Русский</option>
+    </select>
+	</a>
+</form>
   <div class="navbar">
   <div class="log_in_and_reg">
   <?php
   if ($_COOKIE["login"] == 0) {
-	  echo "<table><td><button onclick=document.getElementById('id01').style.display='block' style=width:auto;>Log in</button></td>
-	  <td><button  onclick=window.location.href='register.html' style=width:auto;>Register</button></td>
-	  <td><button  onclick=window.location.href='settings.php'>Settings</button></td></table>";
+	  echo "<table><td><button onclick=document.getElementById('id01').style.display='block' style=width:auto;><span lang='en'>Log in</span><span lang='ru'>Войти</span></button></td>
+	  <td><button  onclick=window.location.href='register.html' style=width:auto;><span lang='en'>Register</span><span lang='ru'>Регистрация</span></button></td></table>";
   }
   else {
 	  $u_na = $_COOKIE["uname"];
-	  echo "<table><td><a>$u_na</a></td><td><form action='upload.php' method='post'><input type='hidden' id='u_status' name='u_status' value='0'><button type='submit'>Log out</button></form></td>
-	  <td><button onclick=window.location.href='settings.php'>Settings</button></td></table>";
+	  echo "<table><td><a>$u_na</a></td><td><form action='upload.php' method='post'><input type='hidden' id='u_status' name='u_status' value='0'><button type='submit'><span lang='en'>Log out</span><span lang='ru'>Выйти</span></button></form></td>
+	  <td><button  onclick=window.location.href='settings.php'><span lang='en'>Settings</span><span lang='ru'>Настройки</span></button></td></table>";
   }
   ?>
   </div>
@@ -130,18 +137,18 @@ if (isset($_COOKIE["author"]) == 1 and isset($_POST["upload"])) {
 </div>
   <form action="upload.php" method="post" enctype="multipart/form-data">
   <div class="container">
-  <h3>Upload image</h3>
-  <p>Please fill in this form to upload your image.</p><hr>
-  <label for="p_name"><b>Name</b></label>
+  <span lang="en"><h3>Upload image</h3></span><span lang="ru">Загрузить изображение</span>
+  <p><span lang="en">Please fill in this form to upload your image.</span><span lang="ru">Пожалуйста заполните форму для того, чтобы загрузить изображение.</span></p><hr>
+  <label for="p_name"><b><span lang="en">Name</span><span lang="ru">Название</span></b></label>
   <input type="text" placeholder="Enter Name" name="p_name" id="p_name">
   <input type="hidden" name="upload" id="upload" value="1">
   <hr>
-  Select image to upload:
+  <span lang="en">Select image to upload:</span><span lang="ru">Выберите изображение для загрузки:</span>
   <input type="file" name="f_to_u" id="f_to_u">
   <hr>
   <table>
   <td>
-  <label for="c_id"><b>Category: </b></label>
+  <label for="c_id"><b><span lang="en">Category: </span><span lang="ru">Категория: </span></b></label>
   </td>
   <td>
   <div class="custom-select" style="width:230px;">
@@ -157,7 +164,7 @@ if (isset($_COOKIE["author"]) == 1 and isset($_POST["upload"])) {
   <hr>
   <table>
   <td>
-  <label for="g_id"><b>Genre: </b></label>
+  <label for="g_id"><b><span lang="en">Genre: </span><span lang="ru">Жанр: </span></b></label>
   </td>
   <td>
   <div class="custom-select" style="width:200px;">
@@ -175,11 +182,11 @@ if (isset($_COOKIE["author"]) == 1 and isset($_POST["upload"])) {
   </td>
   </table>
   <hr>
-  <label for="year_t"><b>Year Taken</b></label>
+  <label for="year_t"><b><span lang="en">Year Taken</span><span lang="ru">Год написания</span></b></label>
   <input type="text" placeholder="Enter Year" name="year_t" id="year_t">
   <?php if($_COOKIE["login"] <> 0 and isset($_COOKIE["author"])) {
 	  if ($_COOKIE["author"] == 1) {
-		  echo "<button type='submit' class='registerbtn'>Upload</button>";
+		  echo "<button type='submit' class='registerbtn'><span lang='en'>Upload</span><span lang='ru'>Загрузить</span></button>";
 	  }
 	  else {
 		echo "<script>alert('Sorry! It looks like you don\'t have rights to to upload images.');</script>";
@@ -191,7 +198,7 @@ if (isset($_COOKIE["author"]) == 1 and isset($_POST["upload"])) {
   ?>
   </div>
   <div class="container signin">
-  <p>Don't have an account? <a href="register.html">Register Now</a>.</p>
+  <p><span lang="en">Don't have an account? </span><span lang="ru">Нет аккаунта? </span><a href="register.html"><span lang="en">Register Now</span><span lang="ru">Зарегистрируйтесь сейчас</span></a>.</p>
   </div>
   </form>
 
@@ -203,13 +210,13 @@ if (isset($_COOKIE["author"]) == 1 and isset($_POST["upload"])) {
     </div>
 
     <div class="container">
-      <label for="uemail"><b>Email</b></label>
+      <label for="uemail"><b><span lang="en">Email</span><span lang="ru">Адрес электронной почты</span></b></label>
       <input type="text" placeholder="Enter Email" name="email" required>
 
-      <label for="psw"><b>Password</b></label>
+      <label for="psw"><b><span lang="en">Password</span><span lang="ru">Пароль</span></b></label>
       <input type="password" placeholder="Enter Password" name="psw" required>
       <input type="hidden" id="u_status" name="u_status" value="2">
-      <button type="submit">Log in</button>
+      <button type="submit"><span lang="en">Log in</span><span lang="ru">Войти</span></button>
     </div>
   </form>
 </div>
@@ -320,5 +327,28 @@ window.onclick = function(event) {
     }
 }
 </script>
+
+<script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+<script>
+$('[lang]').hide(); // hide all lang attributes on start.
+$('[lang="en"]').show(); // show just English text 
+$('#lang-switch').change(function () { // put onchange event when user select option from select
+    var lang = $(this).val(); // decide which language to display using switch case
+    switch (lang) {
+        case 'en':
+            $('[lang]').hide();
+            $('[lang="en"]').show();
+        break;
+        case 'ru':
+            $('[lang]').hide();
+            $('[lang="ru"]').show();
+        break;
+        default:
+            $('[lang]').hide();
+            $('[lang="en"]').show();
+        }
+});
+</script>
+
 </body>
 </html>

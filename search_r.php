@@ -67,26 +67,33 @@ else {
 <link rel="stylesheet" href="g_styles.css">
 </head>
 <body>
-<a style="text-decoration:none" href="index.php" ><h2 class="example" align="center">Art Gallery</h2></a>
+<a style="text-decoration:none" href="index.php" ><h2 class="example" align="center"><span lang="en">Art Gallery</span><span lang="ru">Галерея Творчества</span></h2></a>
 <div id="navbar">
-  <a href="index.php">Home</a>
-  <a href="paintings.php">Paintings</a>
-  <a href="photos.php">Photos</a>
-  <a href="drawings.php">Drawings</a>
-  <a href="upload.php">Upload</a>
-  <a class="active" href="search.php">Search</a>
+  <a href="index.php"><span lang="en">Home</span><span lang="ru">Главная</span></a>
+  <a href="paintings.php"><span lang="en">Paintings</span><span lang="ru">Картины</span></a>
+  <a href="photos.php"><span lang="en">Photos</span><span lang="ru">Фотографии</span></a>
+  <a href="drawings.php"><span lang="en">Drawings</span><span lang="ru">Рисунки</span></a>
+  <a href="upload.php"><span lang="en">Upload</span><span lang="ru">Загрузка</span></a>
+  <a class="active" href="search.php"><span lang="en">Search</span><span lang="ru">Поиск</span></a>
+  <form>
+    <a>
+    <select id="lang-switch">
+        <option value="en" selected>English</option>
+        <option value="ru">Русский</option>
+    </select>
+	</a>
+</form>
   <div class="navbar">
   <div class="log_in_and_reg">
-	<?php
+  <?php
   if ($_COOKIE["login"] == 0) {
-	  echo "<table><td><button onclick=document.getElementById('id01').style.display='block' style=width:auto;>Log in</button></td>
-	  <td><button  onclick=window.location.href='register.html' style=width:auto;>Register</button></td>
-	  <td><button  onclick=window.location.href='settings.php'>Settings</button></td></table>";
+	  echo "<table><td><button onclick=document.getElementById('id01').style.display='block' style=width:auto;><span lang='en'>Log in</span><span lang='ru'>Войти</span></button></td>
+	  <td><button  onclick=window.location.href='register.html' style=width:auto;><span lang='en'>Register</span><span lang='ru'>Регистрация</span></button></td></table>";
   }
   else {
 	  $u_na = $_COOKIE["uname"];
-	  echo "<table><td><a>$u_na</a></td><td><form action='search.php' method='post'><input type='hidden' id='u_status' name='u_status' value='0'><button type='submit'>Log out</button></form></td>
-	  <td><button  onclick=window.location.href='settings.php'>Settings</button></td></table>";
+	  echo "<table><td><a>$u_na</a></td><td><form action='index.php' method='post'><input type='hidden' id='u_status' name='u_status' value='0'><button type='submit'><span lang='en'>Log out</span><span lang='ru'>Выйти</span></button></form></td>
+	  <td><button  onclick=window.location.href='settings.php'><span lang='en'>Settings</span><span lang='ru'>Настройки</span></button></td></table>";
   }
   ?>
   </div>
@@ -101,13 +108,13 @@ else {
     </div>
 
     <div class="container">
-      <label for="uemail"><b>Email</b></label>
+      <label for="uemail"><b><span lang="en">Email</span><span lang="ru">Адрес электронной почты</span></b></label>
       <input type="text" placeholder="Enter Email" name="email" required>
 
-      <label for="psw"><b>Password</b></label>
+      <label for="psw"><b><span lang="en">Password</span><span lang="ru">Пароль</span></b></label>
       <input type="password" placeholder="Enter Password" name="psw" required>
       <input type="hidden" id="u_status" name="u_status" value="2">
-      <button type="submit">Log in</button>
+      <button type="submit"><span lang="en">Log in</span><span lang="ru">Войти</span></button>
     </div>
   </form>
 </div>
@@ -213,5 +220,28 @@ window.onclick = function(event) {
     }
 }
 </script>
+
+<script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+<script>
+$('[lang]').hide(); // hide all lang attributes on start.
+$('[lang="en"]').show(); // show just English text 
+$('#lang-switch').change(function () { // put onchange event when user select option from select
+    var lang = $(this).val(); // decide which language to display using switch case
+    switch (lang) {
+        case 'en':
+            $('[lang]').hide();
+            $('[lang="en"]').show();
+        break;
+        case 'ru':
+            $('[lang]').hide();
+            $('[lang="ru"]').show();
+        break;
+        default:
+            $('[lang]').hide();
+            $('[lang="en"]').show();
+        }
+});
+</script>
+
 </body>
 </html>

@@ -67,7 +67,7 @@ else {
 <link rel="stylesheet" href="g_styles.css">
 </head>
 <body>
-<a style="text-decoration:none" href="index.php" ><h2 class="example" align="center"><span lang="en">Art Gallery</span><span lang="ru">Галерея творчества</span></h2></a>
+<a style="text-decoration:none" href="index.php" ><h2 class="example" align="center"><span lang="en">Art Gallery</span><span lang="ru">Галерея Творчества</span></h2></a>
 <div id="navbar">
   <a class="active" href="index.php"><span lang="en">Home</span><span lang="ru">Главная</span></a>
   <a href="paintings.php"><span lang="en">Paintings</span><span lang="ru">Картины</span></a>
