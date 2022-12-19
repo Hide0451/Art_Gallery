@@ -66,7 +66,7 @@ if (isset($_COOKIE["author"]) == 1 and isset($_POST["upload"])) {
 		  $result = pg_query($db_connection, "SELECT * FROM users INNER JOIN pictures ON users.user_id = pictures.author_id
 		  WHERE u_name = '$u_name' AND pic_name = '$pic_name'");
 		  $num_r = pg_num_rows($result);
-		  if ($num_r == 0 and $_POST["c_id"] <> 0 and $_POST["g_id"] <> 0 and $_POST["year_t"] > 0) {
+		  if ($num_r == 0 and $_POST["c_id"] <> 0 and $_POST["g_id"] <> 0) {
 			  $info = pathinfo($_FILES['f_to_u']['name']);
 			  $ext = $info['extension']; // get the extension of the file
 			  if ($ext == 'jpg') {
@@ -95,6 +95,12 @@ if (isset($_COOKIE["author"]) == 1 and isset($_POST["upload"])) {
 			  echo "<script>alert('Wrong cridentials')</script>";
 		  }
 }
+if (isset($_COOKIE["lang"])) {
+}
+else {
+	setcookie('lang', 0, time()+60*30);
+	$_COOKIE["lang"] = 0;
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -114,8 +120,16 @@ if (isset($_COOKIE["author"]) == 1 and isset($_POST["upload"])) {
   <form>
     <a>
     <select id="lang-switch">
-        <option value="en" selected>English</option>
-        <option value="ru">Русский</option>
+        <?php
+        if ($_COOKIE["lang"] == 0) {
+			echo "<option value='en' selected>English</option>
+			<option value='ru'>Русский</option>";
+		}
+		if ($_COOKIE["lang"] == 1) {
+			echo "<option value='en'>English</option>
+			<option value='ru' selected>Русский</option>";
+		}
+		?>
     </select>
 	</a>
 </form>
@@ -124,7 +138,7 @@ if (isset($_COOKIE["author"]) == 1 and isset($_POST["upload"])) {
   <?php
   if ($_COOKIE["login"] == 0) {
 	  echo "<table><td><button onclick=document.getElementById('id01').style.display='block' style=width:auto;><span lang='en'>Log in</span><span lang='ru'>Войти</span></button></td>
-	  <td><button  onclick=window.location.href='register.html' style=width:auto;><span lang='en'>Register</span><span lang='ru'>Регистрация</span></button></td></table>";
+	  <td><button  onclick=window.location.href='register.php' style=width:auto;><span lang='en'>Register</span><span lang='ru'>Регистрация</span></button></td></table>";
   }
   else {
 	  $u_na = $_COOKIE["uname"];
@@ -140,11 +154,11 @@ if (isset($_COOKIE["author"]) == 1 and isset($_POST["upload"])) {
   <span lang="en"><h3>Upload image</h3></span><span lang="ru">Загрузить изображение</span>
   <p><span lang="en">Please fill in this form to upload your image.</span><span lang="ru">Пожалуйста заполните форму для того, чтобы загрузить изображение.</span></p><hr>
   <label for="p_name"><b><span lang="en">Name</span><span lang="ru">Название</span></b></label>
-  <input type="text" placeholder="Enter Name" name="p_name" id="p_name">
+  <input type="text" placeholder="Enter Name" name="p_name" id="p_name" required>
   <input type="hidden" name="upload" id="upload" value="1">
   <hr>
   <span lang="en">Select image to upload:</span><span lang="ru">Выберите изображение для загрузки:</span>
-  <input type="file" name="f_to_u" id="f_to_u">
+  <input type="file" name="f_to_u" id="f_to_u" required>
   <hr>
   <table>
   <td>
@@ -198,7 +212,7 @@ if (isset($_COOKIE["author"]) == 1 and isset($_POST["upload"])) {
   ?>
   </div>
   <div class="container signin">
-  <p><span lang="en">Don't have an account? </span><span lang="ru">Нет аккаунта? </span><a href="register.html"><span lang="en">Register Now</span><span lang="ru">Зарегистрируйтесь сейчас</span></a>.</p>
+  <p><span lang="en">Don't have an account? </span><span lang="ru">Нет аккаунта? </span><a href="register.php"><span lang="en">Register Now</span><span lang="ru">Зарегистрируйтесь сейчас</span></a>.</p>
   </div>
   </form>
 
@@ -331,21 +345,38 @@ window.onclick = function(event) {
 <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
 <script>
 $('[lang]').hide(); // hide all lang attributes on start.
-$('[lang="en"]').show(); // show just English text 
+let xm = document.cookie;
+var y = xm.match(/lang=(\d+)/i)[1];
+if (y == 0) {
+	$('[lang="en"]').show();
+}
+if (y == 1) {
+	$('[lang="ru"]').show();
+}
+
 $('#lang-switch').change(function () { // put onchange event when user select option from select
     var lang = $(this).val(); // decide which language to display using switch case
     switch (lang) {
         case 'en':
             $('[lang]').hide();
             $('[lang="en"]').show();
+			 document.cookie = "lang=0";
         break;
         case 'ru':
             $('[lang]').hide();
             $('[lang="ru"]').show();
+			 document.cookie = "lang=1";
         break;
         default:
-            $('[lang]').hide();
-            $('[lang="en"]').show();
+		    $('[lang]').hide();
+		    let xm = document.cookie;
+		    var y = xm.match(/lang=(\d+)/i)[1];
+			if (y == 0) {
+                $('[lang="en"]').show();
+			}
+			if (y == 1) {
+                $('[lang="ru"]').show();
+			}
         }
 });
 </script>

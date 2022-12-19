@@ -22,7 +22,7 @@ pic_name VARCHAR(30),
 author_id INT,
 category_id INT,
 genre_id INT,
-year_taken INT,
+year_taken INT DEFAULT 0,
 date_posted TIMESTAMP DEFAULT (date_trunc('second', now()::TIMESTAMP)),
 FOREIGN KEY (author_id) REFERENCES users (user_id) ON UPDATE CASCADE ON DELETE RESTRICT,
 FOREIGN KEY (category_id) REFERENCES category (category_id) ON UPDATE CASCADE ON DELETE RESTRICT,
@@ -64,4 +64,6 @@ u_date DATE,
 author INT,
 act_code VARCHAR(255),
 act_exp TIMESTAMP DEFAULT (date_trunc('second', now()::TIMESTAMP) + interval '1 hour' * 6));
+
+
 
