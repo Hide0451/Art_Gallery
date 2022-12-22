@@ -40,12 +40,14 @@ if ($num_r <> 0) {
 	else {
 		$d_to_d = array('u_email' => $user_email);
 		pg_delete($db_connection, 'tmp_users', $d_to_d);
-		echo "<script>alert('Sorry! Your activation code had expired.')</script>";
+		setcookie('msg', 3, time()+1);
+	    $_COOKIE["msg"] = 3;
 		echo "<script>window.location = 'index.php'</script>";
 	}
 }
 else {
-	echo "<script>alert('Wrong Email')</script>";
+	setcookie('msg', 4, time()+1);
+	$_COOKIE["msg"] = 4;
 	echo "<script>window.location = 'index.php'</script>";
 }
 ?>

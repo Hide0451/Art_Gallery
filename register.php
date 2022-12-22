@@ -33,13 +33,13 @@ else {
     <hr>
 
     <label for="uname"><b><span lang="en">Name</span><span lang="ru">Имя</span></b></label>
-    <input type="text" placeholder="Enter Name" name="name" id="name" required>
+    <input type="text" placeholder="Enter Name" name="name" id="name" maxlength="30" required>
 	
     <label for="uemail"><b><span lang="en">Email: </span><span lang="ru">Адрес электронной почты</span></b></label>
-    <input type="email" placeholder="Enter Email" name="email" id="email" required><br><hr>
+    <input type="email" placeholder="Enter Email" name="email" id="email" maxlength="50" required><br><hr>
 
     <label for="psw"><b><span lang="en">Password</span><span lang="ru">Пароль</span></b></label>
-    <input type="password" placeholder="Enter Password" name="psw" id="psw" required>
+    <input type="password" placeholder="Enter Password" name="psw" id="psw" maxlength="30" required>
 	<label for="udate"><b><span lang="en">Birth date:</span><span lang="ru">Дата рождения</span></b></label>
     <input type="date" placeholder="Enter Date" name="date" id="date" min="1922-01-01" max="2004-01-01" required >
 	<br><hr>

@@ -1,5 +1,22 @@
 <?php
 $db_connection = pg_connect("host=localhost dbname=test user=postgres password=yo_password");
+if (isset($_COOKIE["adm_login"])) {
+		if ($_COOKIE["adm_login"] == 1) {
+			$adm_id = $_COOKIE["adm_id"];
+			$result = pg_query($db_connection, "SELECT * FROM administrators WHERE adm_id='$adm_id'");
+			$num_r = pg_num_rows($result);
+		    if ($num_r == 0) {
+				setcookie('adm_login', 0, time()+60*30);
+				$_COOKIE["adm_login"] = 0;
+				echo "<script>window.location = 'adm_page.php'</script>";
+			}
+		}
+	}
+else {
+	setcookie('adm_login', 0, time()+60*30);
+	$_COOKIE["adm_login"] = 0;
+	echo "<script>window.location = 'adm_page.php'</script>";
+}
 if (isset($_POST["adm_status"])) {
 	//log out
 	if ($_POST["adm_status"] == 0) {
@@ -35,30 +52,54 @@ if (isset($_POST["adm_status"])) {
 			$_COOKIE["adm_id"] = $adm_id;
 		}
 		else {
-			echo "<script>alert('The user with $adm_name already exist.')</script>";
+			setcookie('msg', 1, time()+1);
+		    $_COOKIE["msg"] = 1;
+			echo "<script>window.location = 'adm_page.php'</script>";
 		}
 	}
 	//log in
 	if ($_POST["adm_status"] == 2) {
 		$adm_name = $_POST["name"];
 		$adm_password = $_POST["psw"];
-		$result = pg_query($db_connection, "SELECT adm_name, adm_password, adm_id FROM administrators WHERE adm_name='$adm_name'");
-		$num_r = pg_num_rows($result);
-		if ($num_r <> 0) {
-			$adm_password_r = pg_fetch_result($result, 0, 1);
-			if(password_verify($adm_password, $adm_password_r)) {
-				setcookie('adm_login', 1, time()+60*30);
-				$_COOKIE["adm_login"] = 1;
-				$adm_name = pg_fetch_result($result, 0, 0);
-				setcookie('adm_name', $adm_name, time()+60*30);
-				$_COOKIE["adm_name"] = $adm_name;
-				$adm_id = pg_fetch_result($result, 0, 2);
-				setcookie('adm_id', $adm_id, time()+60*30);
-				$_COOKIE["adm_id"] = $adm_id;
+		if ($adm_name == 'superadm') {
+			if ($db_connection1 = pg_connect("host=localhost dbname=test user=superadm password='$adm_password'")) {
+				setcookie('sadm_login', 1, time()+60*30);
+				$_COOKIE["sadm_login"] = 1;
+				echo "<script>window.location = 'sadm_main.php'</script>";
 			}
-			else echo "<script>alert('Wrong Login or Password')</script>";
+			else {
+				setcookie('msg', 2, time()+1);
+		        $_COOKIE["msg"] = 2;
+				echo "<script>window.location = 'adm_page.php'</script>";
+			}
 		}
-		else echo "<script>alert('Wrong Login or Password')</script>";
+		else {
+			$result = pg_query($db_connection, "SELECT adm_name, adm_password, adm_id FROM administrators WHERE adm_name='$adm_name'");
+			$num_r = pg_num_rows($result);
+			if ($num_r <> 0) {
+				$adm_password_r = pg_fetch_result($result, 0, 1);
+				if(password_verify($adm_password, $adm_password_r)) {
+					setcookie('adm_login', 1, time()+60*30);
+					$_COOKIE["adm_login"] = 1;
+					$adm_name = pg_fetch_result($result, 0, 0);
+					setcookie('adm_name', $adm_name, time()+60*30);
+					$_COOKIE["adm_name"] = $adm_name;
+					$adm_id = pg_fetch_result($result, 0, 2);
+					setcookie('adm_id', $adm_id, time()+60*30);
+					$_COOKIE["adm_id"] = $adm_id;
+				}
+				else {
+					setcookie('msg', 2, time()+1);
+					$_COOKIE["msg"] = 2;
+					echo "<script>window.location = 'adm_page.php'</script>";
+				}
+			}
+			else {
+				setcookie('msg', 2, time()+1);
+		        $_COOKIE["msg"] = 2;
+				echo "<script>window.location = 'adm_page.php'</script>";
+			}
+		}
 	}
 }
 else {
@@ -77,7 +118,9 @@ if (isset($_POST["img_status"])) {
         $d_to_d = array('pic_id' => $_POST["img_id"]);
 		pg_delete($db_connection, 'pictures', $d_to_d);
 		unlink("../images/$img_id.jpg");
-		echo "<script>alert('Image successfully deleted.')</script>";
+		setcookie('msg', 3, time()+1);
+		$_COOKIE["msg"] = 3;
+		echo "<script>window.location = 'adm_main.php'</script>";
 	}
     // Change image info
 	if ($_POST["img_status"] == 2) {
@@ -106,7 +149,9 @@ if (isset($_POST["img_status"])) {
 				  'year_taken' => $year_t);
         $cond = array('pic_id' => $img_id);
 		pg_update($db_connection, 'pictures', $d_to_u, $cond);
-		echo "<script>alert('Image info successfully changed.')</script>";
+		setcookie('msg', 4, time()+1);
+		$_COOKIE["msg"] = 4;
+		echo "<script>window.location = 'adm_main.php'</script>";
 	
 	}
 }
@@ -119,10 +164,14 @@ if (isset($_POST["user_status"])) {
 		if ($num_r == 0) {
 			$d_to_d = array('user_id' => $_POST["user_id"]);
 			pg_delete($db_connection, 'users', $d_to_d);
-			echo "<script>alert('User successfully deleted.')</script>";
+			setcookie('msg', 5, time()+1);
+			$_COOKIE["msg"] = 5;
+			echo "<script>window.location = 'adm_main.php'</script>";
 		}
 		else {
-			echo "<script>alert('User could not be deleted.')</script>";
+			setcookie('msg', 6, time()+1);
+			$_COOKIE["msg"] = 6;
+			echo "<script>window.location = 'adm_main.php'</script>";
 		}
 	}
     // Change user info
@@ -142,7 +191,9 @@ if (isset($_POST["user_status"])) {
 				  'u_date' => $u_date);
         $cond = array('user_id' => $user_id);
 		pg_update($db_connection, 'users', $d_to_u, $cond);
-		echo "<script>alert('User info successfully changed.')</script>";
+		setcookie('msg', 7, time()+1);
+		$_COOKIE["msg"] = 7;
+		echo "<script>window.location = 'adm_main.php'</script>";
 	
 	}
 	// Ban user
@@ -152,7 +203,9 @@ if (isset($_POST["user_status"])) {
 				  'u_status' => 1);
         $cond = array('user_id' => $user_id);
 		pg_update($db_connection, 'users', $d_to_u, $cond);
-		echo "<script>alert('Banned user.')</script>";
+		setcookie('msg', 8, time()+1);
+		$_COOKIE["msg"] = 8;
+		echo "<script>window.location = 'adm_main.php'</script>";
 	}
 	// Unban user
 	if ($_POST["user_status"] == 4) {
@@ -161,11 +214,12 @@ if (isset($_POST["user_status"])) {
 				  'u_status' => 0);
         $cond = array('user_id' => $user_id);
 		pg_update($db_connection, 'users', $d_to_u, $cond);
-		echo "<script>alert('Unbanned user.')</script>";
+		setcookie('msg', 9, time()+1);
+		$_COOKIE["msg"] = 9;
+		echo "<script>window.location = 'adm_main.php'</script>";
 	}
 }
 ?>
-<!DOCTYPE html>
 <!DOCTYPE html>
 <html>
 <head>
@@ -182,16 +236,47 @@ if (isset($_POST["user_status"])) {
   <div class="log_in_and_reg">
   <?php
   if ($_COOKIE["adm_login"] == 0) {
-	  echo "<script>window.location = 'adm_page.html'</script>";
+	  echo "<script>window.location = 'adm_page.php'</script>";
   }
   else {
 	  $u_na = $_COOKIE["adm_name"];
-	  echo "<table><td><a>$u_na</a></td><td><form action='adm_page.html' method='post'><input type='hidden' id='adm_status' name='adm_status' value='0'><button type='submit'>Log out</button></form></td></table>";
+	  echo "<table><td><a>$u_na</a></td><td><form action='adm_page.php' method='post'><input type='hidden' id='adm_status' name='adm_status' value='0'><button type='submit'>Log out</button></form></td></table>";
   }
   ?>
   </div>
 </div>
 </div>
+<?php
+if (isset($_COOKIE["msg"])) {
+	if ($_COOKIE["msg"] == 1) {
+		echo "<div class='alert'><p class='ncol'><span class='closebtn' onclick=this.parentElement.style.display='none';>&times;</span>Admin with this name already exists</p></div>";
+	}
+	if ($_COOKIE["msg"] == 2) {
+		echo "<div class='alert'><p class='ncol'><span class='closebtn' onclick=this.parentElement.style.display='none';>&times;</span>Wrong login or password</p></div>";
+	}
+	if ($_COOKIE["msg"] == 3) {
+		echo "<div class='alert'><p class='ncol'><span class='closebtn' onclick=this.parentElement.style.display='none';>&times;</span>Image deleted</p></div>";
+	}
+	if ($_COOKIE["msg"] == 4) {
+		echo "<div class='alert'><p class='ncol'><span class='closebtn' onclick=this.parentElement.style.display='none';>&times;</span>Changed image info</p></div>";
+	}
+	if ($_COOKIE["msg"] == 5) {
+		echo "<div class='alert'><p class='ncol'><span class='closebtn' onclick=this.parentElement.style.display='none';>&times;</span>Deleted user</p></div>";
+	}
+	if ($_COOKIE["msg"] == 6) {
+		echo "<div class='alert'><p class='ncol'><span class='closebtn' onclick=this.parentElement.style.display='none';>&times;</span>Could not delete user</p></div>";
+	}
+	if ($_COOKIE["msg"] == 7) {
+		echo "<div class='alert'><p class='ncol'><span class='closebtn' onclick=this.parentElement.style.display='none';>&times;</span>Changed user info</p></div>";
+	}
+	if ($_COOKIE["msg"] == 8) {
+		echo "<div class='alert'><p class='ncol'><span class='closebtn' onclick=this.parentElement.style.display='none';>&times;</span>Banned user</p></div>";
+	}
+	if ($_COOKIE["msg"] == 9) {
+		echo "<div class='alert'><p class='ncol'><span class='closebtn' onclick=this.parentElement.style.display='none';>&times;</span>Unbanned user</p></div>";
+	}
+}
+?>
 <script>
 window.onscroll = function() {myFunction()};
 

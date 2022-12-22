@@ -18,45 +18,32 @@ if (isset($_POST["u_status"])) {
 			setcookie("u_id", null, time() - 3600, '/');
 		}
 	}
-	//log in
-	if ($_POST["u_status"] == 2) {
-		$user_email = $_POST["email"];
-		$user_password = $_POST["psw"];
-		$result = pg_query($db_connection, "SELECT u_email, u_password, u_name, author, user_id, u_status FROM users WHERE u_email='$user_email'");
-		$num_r = pg_num_rows($result);
-		if ($num_r <> 0) {
-			$user_password_r = pg_fetch_result($result, 0, 1);
-			$user_status = pg_fetch_result($result, 0, 5);
-			if(password_verify($user_password, $user_password_r) and $user_status == 0) {
-				setcookie('login', 1, time()+60*30);
-				$_COOKIE["login"] = 1;
-				$uname = pg_fetch_result($result, 0, 2);
-				setcookie('uname', $uname, time()+60*30);
-				$_COOKIE["uname"] = $uname;
-				$author = pg_fetch_result($result, 0, 3);
-				setcookie('author', $author, time()+60*30);
-				$_COOKIE["author"] = $author;
-				$user_id = pg_fetch_result($result, 0, 4);
-				setcookie('u_id', $user_id, time()+60*30);
-				$_COOKIE["u_id"] = $user_id;
-			}
-			else {
-				echo "<script>alert('Wrong Email or Password')</script>";
-			    echo "<script>window.location = 'settings.php'</script>";
-			}
-		}
-		else {
-			echo "<script>alert('Wrong Email or Password')</script>";
-			echo "<script>window.location = 'settings.php'</script>";
-		}
-	}
 }
 else {
 	if (isset($_COOKIE["login"])) {
+		if ($_COOKIE["login"] == 1) {
+			$u_id = $_COOKIE["u_id"];
+			$result = pg_query($db_connection, "SELECT u_status FROM users WHERE user_id='$u_id'");
+			$num_r = pg_num_rows($result);
+		    if ($num_r <> 0) {
+				$u_status = pg_fetch_result($result, 0, 0);
+				if ($u_status == 1) {
+					setcookie('login', 0, time()+60*30);
+					$_COOKIE["login"] = 0;
+					echo "<script>window.location = 'index.php'</script>";
+				}
+			}
+			else {
+				setcookie('login', 0, time()+60*30);
+				$_COOKIE["login"] = 0;
+				echo "<script>window.location = 'index.php'</script>";
+			}
+		}
 	}
 	else {
 		setcookie('login', 0, time()+60*30);
 		$_COOKIE["login"] = 0;
+		echo "<script>window.location = 'index.php'</script>";
 	}
 }
 if (isset($_COOKIE["lang"])) {
@@ -102,12 +89,11 @@ else {
   <?php
   if ($_COOKIE["login"] == 0) {
 	  echo "<table><td><button onclick=document.getElementById('id01').style.display='block' style=width:auto;><span lang='en'>Log in</span><span lang='ru'>Войти</span></button></td>
-	  <td><button  onclick=window.location.href='register.php' style=width:auto;><span lang='en'>Register</span><span lang='ru'>Регистрация</span></button></td>
-	  <td><button  onclick=window.location.href='settings.php'><span lang='en'>Settings</span><span lang='ru'>Настройки</span></button></td></table>";
+	  <td><button  onclick=window.location.href='register.php' style=width:auto;><span lang='en'>Register</span><span lang='ru'>Регистрация</span></button></td></table>";
   }
   else {
 	  $u_na = $_COOKIE["uname"];
-	  echo "<table><td><a>$u_na</a></td><td><form action='settings.php' method='post'><input type='hidden' id='u_status' name='u_status' value='0'><button type='submit'><span lang='en'>Log out</span><span lang='ru'>Выйти</span></button></form></td>
+	  echo "<table><td><a>$u_na</a></td><td><form action='index.php' method='post'><input type='hidden' id='u_status' name='u_status' value='0'><button type='submit'><span lang='en'>Log out</span><span lang='ru'>Выйти</span></button></form></td>
 	  <td><button  onclick=window.location.href='settings.php'><span lang='en'>Settings</span><span lang='ru'>Настройки</span></button></td></table>";
   }
   ?>

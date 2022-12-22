@@ -41,18 +41,36 @@ if (isset($_POST["u_status"])) {
 				$_COOKIE["u_id"] = $user_id;
 			}
 			else {
-				echo "<script>alert('Wrong Email or Password')</script>";
+				setcookie('msg', 1, time()+1);
+		        $_COOKIE["msg"] = 1;
 			    echo "<script>window.location = 'upload.php'</script>";
 			}
 		}
 		else {
-			echo "<script>alert('Wrong Email or Password')</script>";
+			setcookie('msg', 1, time()+1);
+		    $_COOKIE["msg"] = 1;
 		    echo "<script>window.location = 'upload.php'</script>";
 		}
 	}
 }
 else {
 	if (isset($_COOKIE["login"])) {
+		if ($_COOKIE["login"] == 1) {
+			$u_id = $_COOKIE["u_id"];
+			$result = pg_query($db_connection, "SELECT u_status FROM users WHERE user_id='$u_id'");
+			$num_r = pg_num_rows($result);
+		    if ($num_r <> 0) {
+				$u_status = pg_fetch_result($result, 0, 0);
+				if ($u_status == 1) {
+					setcookie('login', 0, time()+60*30);
+					$_COOKIE["login"] = 0;
+				}
+			}
+			else {
+				setcookie('login', 0, time()+60*30);
+				$_COOKIE["login"] = 0;
+			}
+		}
 	}
 	else {
 		setcookie('login', 0, time()+60*30);
@@ -84,16 +102,25 @@ if (isset($_COOKIE["author"]) == 1 and isset($_POST["upload"])) {
 				  'year_taken' => $_POST["year_t"]);
 				  $db_connection = pg_connect("host=localhost dbname=test user=postgres password=yo_password");
 				  pg_insert($db_connection, 'pictures', $tmp);
-				  echo "<script>alert('Image successfully uploaded.')</script>";
+				  setcookie('msg', 2, time()+1);
+		          $_COOKIE["msg"] = 2;
 				  echo "<script>window.location = 'upload.php'</script>";
 			  }
 			  else {
-				  echo "<script>alert('Sorry, only JPG files are allowed.')</script>";
+				  setcookie('msg', 3, time()+1);
+		          $_COOKIE["msg"] = 3;
+				  echo "<script>window.location = 'upload.php'</script>";
 		      }
 		  }
 		  else {
-			  echo "<script>alert('Wrong cridentials')</script>";
+			  setcookie('msg', 4, time()+1);
+		      $_COOKIE["msg"] = 4;
+			  echo "<script>window.location = 'upload.php'</script>";
 		  }
+}
+else {
+	setcookie('msg', 5, time()+1);
+	$_COOKIE["msg"] = 5;
 }
 if (isset($_COOKIE["lang"])) {
 }
@@ -149,12 +176,36 @@ else {
   </div>
 </div>
 </div>
+<?php
+if (isset($_COOKIE["msg"])) {
+	if ($_COOKIE["msg"] == 1) {
+		echo "<div class='alert'><p class='ncol'><span class='closebtn' onclick=this.parentElement.style.display='none';>&times;</span>
+		<span lang='en'>Wrong email or password</span><span lang='ru'>Неправильный email или пароль</span></p></div>";
+	}
+	if ($_COOKIE["msg"] == 2) {
+		echo "<div class='alert'><p class='ncol'><span class='closebtn' onclick=this.parentElement.style.display='none';>&times;</span>
+		<span lang='en'>Image successfully uploaded</span><span lang='ru'>Изображение загруженно успешно</span></p></div>";
+	}
+	if ($_COOKIE["msg"] == 3) {
+		echo "<div class='alert'><p class='ncol'><span class='closebtn' onclick=this.parentElement.style.display='none';>&times;</span>
+		<span lang='en'>Only images with 'jpg' extention are allowed</span><span lang='ru'>Вы можете загрузить только изображения с рассширением 'jpg'</span></p></div>";
+	}
+	if ($_COOKIE["msg"] == 4) {
+		echo "<div class='alert'><p class='ncol'><span class='closebtn' onclick=this.parentElement.style.display='none';>&times;</span>
+		<span lang='en'>You've already posted image with this name</span><span lang='ru'>Вы уже загрузили изображение с таким названием</span></p></div>";
+	}
+	if ($_COOKIE["msg"] == 5) {
+		echo "<div class='alert'><p class='ncol'><span class='closebtn' onclick=this.parentElement.style.display='none';>&times;</span>
+		<span lang='en'>You don't have rights to upload images</span><span lang='ru'>У Вас нет прав на загрузку изображений</span></p></div>";
+	}
+}
+?>
   <form action="upload.php" method="post" enctype="multipart/form-data">
   <div class="container">
   <span lang="en"><h3>Upload image</h3></span><span lang="ru">Загрузить изображение</span>
   <p><span lang="en">Please fill in this form to upload your image.</span><span lang="ru">Пожалуйста заполните форму для того, чтобы загрузить изображение.</span></p><hr>
   <label for="p_name"><b><span lang="en">Name</span><span lang="ru">Название</span></b></label>
-  <input type="text" placeholder="Enter Name" name="p_name" id="p_name" required>
+  <input type="text" placeholder="Enter Name" name="p_name" id="p_name" maxlength="30" required>
   <input type="hidden" name="upload" id="upload" value="1">
   <hr>
   <span lang="en">Select image to upload:</span><span lang="ru">Выберите изображение для загрузки:</span>
@@ -166,8 +217,8 @@ else {
   </td>
   <td>
   <div class="custom-select" style="width:230px;">
-  <select id="c_id" name="c_id">
-    <option value="0">Select category</option>
+  <select id="c_id" name="c_id" required>
+    <option value="">Select category</option>
     <option value="1">Photo</option>
     <option value="2">Painting</option>
     <option value="3">Drawing</option>
@@ -182,8 +233,8 @@ else {
   </td>
   <td>
   <div class="custom-select" style="width:200px;">
-  <select id="g_id" name="g_id">
-    <option value="0">Select genre</option>
+  <select id="g_id" name="g_id" required>
+    <option value="">Select genre</option>
     <option value="1">People</option>
     <option value="2">Nature</option>
     <option value="3">Animals</option>
@@ -197,18 +248,12 @@ else {
   </table>
   <hr>
   <label for="year_t"><b><span lang="en">Year Taken</span><span lang="ru">Год написания</span></b></label>
-  <input type="text" placeholder="Enter Year" name="year_t" id="year_t">
+  <input type="number" placeholder="Enter Year" name="year_t" id="year_t" min="0" max="2022">
   <?php if($_COOKIE["login"] <> 0 and isset($_COOKIE["author"])) {
 	  if ($_COOKIE["author"] == 1) {
 		  echo "<button type='submit' class='registerbtn'><span lang='en'>Upload</span><span lang='ru'>Загрузить</span></button>";
-	  }
-	  else {
-		echo "<script>alert('Sorry! It looks like you don\'t have rights to to upload images.');</script>";
-	  }		
+	  }	
     }
-	else {
-		echo "<script>alert('Sorry! It looks like you don\'t have rights to to upload images.');</script>";
-	}
   ?>
   </div>
   <div class="container signin">

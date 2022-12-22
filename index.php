@@ -24,7 +24,7 @@ if (isset($_POST["u_status"])) {
 		$result = pg_query($db_connection, "SELECT * FROM users WHERE u_email='$user_email'");
 		$num_r = pg_num_rows($result);
 		if ($num_r == 0) {
-			$app_url = 'http://localhost/project_0';
+			$app_url = 'http://localhost/project';
 			$activation_code = password_hash(bin2hex(random_bytes(16)), PASSWORD_DEFAULT);
 			// create the activation link
 			$activation_link = $app_url . "/activate.php?email=$user_email&act_code=$activation_code";
@@ -43,7 +43,8 @@ if (isset($_POST["u_status"])) {
 			$txt = 'Hi, Please go to the following url to activate your account: ' . $activation_link;
 			fwrite($mymail, $txt);
 			fclose($mymail);
-			echo "<script>alert('Please check your email in order to complete registration process!')</script>";
+			setcookie('msg', 1, time()+1);
+		    $_COOKIE["msg"] = 1;
 			if (isset($_COOKIE["login"])) {
 				
 			}
@@ -53,7 +54,8 @@ if (isset($_POST["u_status"])) {
 			}
 		}
 		else {
-			echo "<script>alert('Wrong Email')</script>";
+			setcookie('msg', 4, time()+1);
+			$_COOKIE["msg"] = 4;
 			echo "<script>window.location = 'index.php'</script>";
 		}
 	}
@@ -80,18 +82,36 @@ if (isset($_POST["u_status"])) {
 				$_COOKIE["u_id"] = $user_id;
 			}
 			else {
-				echo "<script>alert('Wrong Email or Password')</script>";
-			    echo "<script>window.location = 'index.php'</script>";
+				setcookie('msg', 2, time()+1);
+				$_COOKIE["msg"] = 2;
+				echo "<script>window.location = 'index.php'</script>";
 			}
 		}
 		else {
-			echo "<script>alert('Wrong Email or Password')</script>";
+			setcookie('msg', 2, time()+1);
+			$_COOKIE["msg"] = 2;
 		    echo "<script>window.location = 'index.php'</script>";
 		}
 	}
 }
 else {
 	if (isset($_COOKIE["login"])) {
+		if ($_COOKIE["login"] == 1) {
+			$u_id = $_COOKIE["u_id"];
+			$result = pg_query($db_connection, "SELECT u_status FROM users WHERE user_id='$u_id'");
+			$num_r = pg_num_rows($result);
+		    if ($num_r <> 0) {
+				$u_status = pg_fetch_result($result, 0, 0);
+				if ($u_status == 1) {
+					setcookie('login', 0, time()+60*30);
+					$_COOKIE["login"] = 0;
+				}
+			}
+			else {
+				setcookie('login', 0, time()+60*30);
+				$_COOKIE["login"] = 0;
+			}
+		}
 	}
 	else {
 		setcookie('login', 0, time()+60*30);
@@ -194,6 +214,26 @@ function myFunction() {
   }
 }
 </script>
+<?php
+if (isset($_COOKIE["msg"])) {
+	if ($_COOKIE["msg"] == 1) {
+		echo "<div class='alert'><p class='ncol'><span class='closebtn' onclick=this.parentElement.style.display='none';>&times;</span>
+		<span lang='en'>Please check mymail.txt file in project folder in order to complete registration process</span><span lang='ru'>Пожалуйста проверьте файл mymail.txt для того чтобы завершить регистрацию</span></p></div>";
+	}
+	if ($_COOKIE["msg"] == 2) {
+		echo "<div class='alert'><p class='ncol'><span class='closebtn' onclick=this.parentElement.style.display='none';>&times;</span>
+		<span lang='en'>Wrong email or password</span><span lang='ru'>Неправильный email или пароль</span></p></div>";
+	}
+	if ($_COOKIE["msg"] == 3) {
+		echo "<div class='alert'><p class='ncol'><span class='closebtn' onclick=this.parentElement.style.display='none';>&times;</span>
+		<span lang='en'>The activation code had expired or incorrect</span><span lang='ru'>Срок кода активации истек или неправильный</span></p></div>";
+	}
+	if ($_COOKIE["msg"] == 4) {
+		echo "<div class='alert'><p class='ncol'><span class='closebtn' onclick=this.parentElement.style.display='none';>&times;</span>
+		<span lang='en'>Wrong email</span><span lang='ru'>Неправильный email</span></p></div>";
+	}
+}
+?>
 <table width="95%" align="center">
 <td align="left" width="70%">
 <div class="slideshow-container">

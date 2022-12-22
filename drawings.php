@@ -41,18 +41,36 @@ if (isset($_POST["u_status"])) {
 				$_COOKIE["u_id"] = $user_id;
 			}
 			else {
-				echo "<script>alert('Wrong Email or Password')</script>";
+				setcookie('msg', 1, time()+1);
+		        $_COOKIE["msg"] = 1;
 			    echo "<script>window.location = 'drawings.php'</script>";
 			}
 		}
 		else {
-			echo "<script>alert('Wrong Email or Password')</script>";
+			setcookie('msg', 1, time()+1);
+		    $_COOKIE["msg"] = 1;
 		    echo "<script>window.location = 'drawings.php'</script>";
 		}
 	}
 }
 else {
 	if (isset($_COOKIE["login"])) {
+		if ($_COOKIE["login"] == 1) {
+			$u_id = $_COOKIE["u_id"];
+			$result = pg_query($db_connection, "SELECT u_status FROM users WHERE user_id='$u_id'");
+			$num_r = pg_num_rows($result);
+		    if ($num_r <> 0) {
+				$u_status = pg_fetch_result($result, 0, 0);
+				if ($u_status == 1) {
+					setcookie('login', 0, time()+60*30);
+					$_COOKIE["login"] = 0;
+				}
+			}
+			else {
+				setcookie('login', 0, time()+60*30);
+				$_COOKIE["login"] = 0;
+			}
+		}
 	}
 	else {
 		setcookie('login', 0, time()+60*30);
@@ -146,6 +164,14 @@ function myFunction() {
   }
 }
 </script>
+<?php
+if (isset($_COOKIE["msg"])) {
+	if ($_COOKIE["msg"] == 1) {
+		echo "<div class='alert'><p class='ncol'><span class='closebtn' onclick=this.parentElement.style.display='none';>&times;</span>
+		<span lang='en'>Wrong email or password</span><span lang='ru'>Неправильный email или пароль</span></p></div>";
+	}
+}
+?>
 <div class="grid-container">
 <?php
 $db_connection = pg_connect("host=localhost dbname=test user=postgres password=yo_password");

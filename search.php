@@ -41,18 +41,36 @@ if (isset($_POST["u_status"])) {
 				$_COOKIE["u_id"] = $user_id;
 			}
 			else {
-				echo "<script>alert('Wrong Email or Password')</script>";
+				setcookie('msg', 1, time()+1);
+		        $_COOKIE["msg"] = 1;
 			    echo "<script>window.location = 'search.php'</script>";
 			}
 		}
 		else {
-			echo "<script>alert('Wrong Email or Password')</script>";
+			setcookie('msg', 1, time()+1);
+		    $_COOKIE["msg"] = 1;
 		    echo "<script>window.location = 'search.php'</script>";
 		}
 	}
 }
 else {
 	if (isset($_COOKIE["login"])) {
+		if ($_COOKIE["login"] == 1) {
+			$u_id = $_COOKIE["u_id"];
+			$result = pg_query($db_connection, "SELECT u_status FROM users WHERE user_id='$u_id'");
+			$num_r = pg_num_rows($result);
+		    if ($num_r <> 0) {
+				$u_status = pg_fetch_result($result, 0, 0);
+				if ($u_status == 1) {
+					setcookie('login', 0, time()+60*30);
+					$_COOKIE["login"] = 0;
+				}
+			}
+			else {
+				setcookie('login', 0, time()+60*30);
+				$_COOKIE["login"] = 0;
+			}
+		}
 	}
 	else {
 		setcookie('login', 0, time()+60*30);
@@ -113,6 +131,22 @@ else {
   </div>
 </div>
 </div>
+<?php
+if (isset($_COOKIE["msg"])) {
+	if ($_COOKIE["msg"] == 1) {
+		echo "<div class='alert'><p class='ncol'><span class='closebtn' onclick=this.parentElement.style.display='none';>&times;</span>
+		<span lang='en'>Wrong email or password</span><span lang='ru'>Неправильный email или пароль</span></p></div>";
+	}
+	if ($_COOKIE["msg"] == 2) {
+		echo "<div class='alert'><p class='ncol'><span class='closebtn' onclick=this.parentElement.style.display='none';>&times;</span>
+		<span lang='en'>No images were found that correspond to your request</span><span lang='ru'>Не найдено изображений удовлетворяющих вашему запросу</span></p></div>";
+	}
+}
+if($_COOKIE["login"] <> 0) {
+}
+else echo "<div class='alert'><p class='ncol'><span class='closebtn' onclick=this.parentElement.style.display='none';>&times;</span>
+<span lang='en'>You do not have rights to use search</span><span lang='ru'>У Вас нет прав на использование поиска</span></p></div>";
+?>
   <form action="search_r.php" method="post">
   <div class="container">
   <h3><span lang="en">Search for image(s)</span><span lang="ru">Искать изображения<span></h3>
@@ -160,8 +194,8 @@ else {
   </table>
   <hr>
   <label for="year_t"><b><span lang="en">Year:</span><span lang="ru">Год:</span></b></label>
-  <p class="ncol"><span lang="en">from</span><span lang="ru">с</span><input type="text" placeholder="Enter Year" name="year_t1" id="year_t1"><span lang="en">to</span><span lang="ru">по</span>
-  <input type="text" placeholder="Enter Year" name="year_t2" id="year_t2"></p>
+  <p class="ncol"><span lang="en">from </span><span lang="ru">с </span><input type="number" placeholder="Enter Year" name="year_t1" id="year_t1" min="0" max="2022"><span lang="en"> to</span><span lang="ru"> по</span>
+  <input type="number" placeholder="Enter Year" name="year_t2" id="year_t2" min="0" max="2022"></p>
   <hr>
   <table>
   <td>

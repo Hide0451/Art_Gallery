@@ -1,5 +1,22 @@
 <?php
 $db_connection = pg_connect("host=localhost dbname=test user=postgres password=yo_password");
+if (isset($_COOKIE["adm_login"])) {
+		if ($_COOKIE["adm_login"] == 1) {
+			$adm_id = $_COOKIE["adm_id"];
+			$result = pg_query($db_connection, "SELECT * FROM administrators WHERE adm_id='$adm_id'");
+			$num_r = pg_num_rows($result);
+		    if ($num_r == 0) {
+				setcookie('adm_login', 0, time()+60*30);
+				$_COOKIE["adm_login"] = 0;
+				echo "<script>window.location = 'adm_page.php'</script>";
+			}
+		}
+	}
+else {
+	setcookie('adm_login', 0, time()+60*30);
+	$_COOKIE["adm_login"] = 0;
+	echo "<script>window.location = 'adm_page.php'</script>";
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -17,16 +34,23 @@ $db_connection = pg_connect("host=localhost dbname=test user=postgres password=y
   <div class="log_in_and_reg">
   <?php
   if ($_COOKIE["adm_login"] == 0) {
-	  echo "<script>window.location = 'adm_page.html'</script>";
+	  echo "<script>window.location = 'adm_page.php'</script>";
   }
   else {
 	  $u_na = $_COOKIE["adm_name"];
-	  echo "<table><td><a>$u_na</a></td><td><form action='adm_page.html' method='post'><input type='hidden' id='adm_status' name='adm_status' value='0'><button type='submit'>Log out</button></form></td></table>";
+	  echo "<table><td><a>$u_na</a></td><td><form action='adm_page.php' method='post'><input type='hidden' id='adm_status' name='adm_status' value='0'><button type='submit'>Log out</button></form></td></table>";
   }
   ?>
   </div>
 </div>
 </div>
+<?php
+if (isset($_COOKIE["msg"])) {
+	if ($_COOKIE["msg"] == 1) {
+		echo "<div class='alert'><p class='ncol'><span class='closebtn' onclick=this.parentElement.style.display='none';>&times;</span>No images were found that correspond to your request</p></div>";
+	}
+}
+?>
 <form action="s_r_in_pic.php" method="post">
   <div class="container">
   <h3>Search in images</h3>
@@ -74,8 +98,8 @@ $db_connection = pg_connect("host=localhost dbname=test user=postgres password=y
   </table>
   <hr>
   <label for="year_t"><b>Year:</b></label>
-  <p class="ncol">from<input type="text" placeholder="Enter Year" name="year_t1" id="year_t1">to
-  <input type="text" placeholder="Enter Year" name="year_t2" id="year_t2"></p>
+  <p class="ncol">from <input type="number" placeholder="Enter Year" name="year_t1" id="year_t1" min="0" max="2022"> to
+  <input type="number" placeholder="Enter Year" name="year_t2" id="year_t2" min="0" max="2022"></p>
   <hr>
   <table>
   <td>

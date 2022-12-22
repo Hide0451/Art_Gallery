@@ -1,5 +1,22 @@
 <?php
 $db_connection = pg_connect("host=localhost dbname=test user=postgres password=yo_password");
+if (isset($_COOKIE["adm_login"])) {
+		if ($_COOKIE["adm_login"] == 1) {
+			$adm_id = $_COOKIE["adm_id"];
+			$result = pg_query($db_connection, "SELECT * FROM administrators WHERE adm_id='$adm_id'");
+			$num_r = pg_num_rows($result);
+		    if ($num_r == 0) {
+				setcookie('adm_login', 0, time()+60*30);
+				$_COOKIE["adm_login"] = 0;
+				echo "<script>window.location = 'adm_page.php'</script>";
+			}
+		}
+	}
+else {
+	setcookie('adm_login', 0, time()+60*30);
+	$_COOKIE["adm_login"] = 0;
+	echo "<script>window.location = 'adm_page.php'</script>";
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -17,11 +34,11 @@ $db_connection = pg_connect("host=localhost dbname=test user=postgres password=y
   <div class="log_in_and_reg">
   <?php
   if ($_COOKIE["adm_login"] == 0) {
-	  echo "<script>window.location = 'adm_page.html'</script>";
+	  echo "<script>window.location = 'adm_page.php'</script>";
   }
   else {
 	  $u_na = $_COOKIE["adm_name"];
-	  echo "<table><td><a>$u_na</a></td><td><form action='adm_page.html' method='post'><input type='hidden' id='adm_status' name='adm_status' value='0'><button type='submit'>Log out</button></form></td></table>";
+	  echo "<table><td><a>$u_na</a></td><td><form action='adm_page.php' method='post'><input type='hidden' id='adm_status' name='adm_status' value='0'><button type='submit'>Log out</button></form></td></table>";
   }
   ?>
   </div>
@@ -99,7 +116,8 @@ if ($num_r <> 0) {
 	}
 }
 else {
-	echo "<script>alert('No images were found that correspond to your request')</script>";
+	setcookie('msg', 1, time()+1);
+	$_COOKIE["msg"] = 1;
 	echo "<script>window.location = 'in_pictures.php'</script>";
 }
 $a = 0;
